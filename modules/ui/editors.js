@@ -14,16 +14,16 @@ function restoreDefaultEvents() {
 
 // on viewbox click event - run function based on target
 function clicked() {
-  const el = d3.event.target; 
+  const el = d3.event.target;
   if (!el || !el.parentElement || !el.parentElement.parentElement) return;
   const parent = el.parentElement, grand = parent.parentElement;
   if (parent.id === "rivers") editRiver(); else
-  if (grand.id === "routes") editRoute(); else
-  if (el.tagName === "textPath" && grand.parentNode.id === "labels") editLabel(); else
-  if (grand.id === "burgLabels") editBurg(); else
-  if (grand.id === "burgIcons") editBurg(); else
-  if (parent.id === "terrain") editReliefIcon(); else
-  if (parent.id === "markers") editMarker();
+    if (grand.id === "routes") editRoute(); else
+      if (el.tagName === "textPath" && grand.parentNode.id === "labels") editLabel(); else
+        if (grand.id === "burgLabels") editBurg(); else
+          if (grand.id === "burgIcons") editBurg(); else
+            if (parent.id === "terrain") editReliefIcon(); else
+              if (parent.id === "markers") editMarker();
 }
 
 // clear elSelected variable
@@ -38,7 +38,7 @@ function unselect() {
 
 // close all dialogs except stated
 function closeDialogs(except = "#except") {
-  $(".dialog:visible").not(except).each(function() {
+  $(".dialog:visible").not(except).each(function () {
     $(this).dialog("close");
   });
 }
@@ -66,7 +66,7 @@ function fitContent() {
 }
 
 // DOM elements sorting on header click
-$(".sortable").on("click", function() {
+$(".sortable").on("click", function () {
   const el = $(this);
   // remove sorting for all siblings except of clicked element
   el.siblings().removeClass("icon-sort-name-up icon-sort-name-down icon-sort-number-up icon-sort-number-down");
@@ -80,28 +80,28 @@ $(".sortable").on("click", function() {
   if (state === "no" || state === "asc") { // sort desc
     el.removeClass("icon-sort-" + type + "-down");
     el.addClass("icon-sort-" + type + "-up");
-    lines.sort(function(a, b) {
+    lines.sort(function (a, b) {
       let an = a.getAttribute("data-" + sortby);
-      if (an === "bottom") {return 1;}
+      if (an === "bottom") { return 1; }
       let bn = b.getAttribute("data-" + sortby);
-      if (bn === "bottom") {return -1;}
-      if (type === "number") {an = +an; bn = +bn;}
-      if (an > bn) {return 1;}
-      if (an < bn) {return -1;}
+      if (bn === "bottom") { return -1; }
+      if (type === "number") { an = +an; bn = +bn; }
+      if (an > bn) { return 1; }
+      if (an < bn) { return -1; }
       return 0;
     });
   }
   if (state === "desc") { // sort asc
     el.removeClass("icon-sort-" + type + "-up");
     el.addClass("icon-sort-" + type + "-down");
-    lines.sort(function(a, b) {
+    lines.sort(function (a, b) {
       let an = a.getAttribute("data-" + sortby);
-      if (an === "bottom") {return 1;}
+      if (an === "bottom") { return 1; }
       let bn = b.getAttribute("data-" + sortby);
-      if (bn === "bottom") {return -1;}
-      if (type === "number") {an = +an; bn = +bn;}
-      if (an < bn) {return 1;}
-      if (an > bn) {return -1;}
+      if (bn === "bottom") { return -1; }
+      if (type === "number") { an = +an; bn = +bn; }
+      if (an < bn) { return 1; }
+      if (an > bn) { return -1; }
       return 0;
     });
   }
@@ -117,10 +117,10 @@ function applySorting(headers) {
   const list = headers.nextElementSibling;
   const lines = Array.from(list.children);
 
-  lines.sort(function(a, b) {
+  lines.sort(function (a, b) {
     let an = a.getAttribute("data-" + sortby);
     let bn = b.getAttribute("data-" + sortby);
-    if (type === "number") {an = +an; bn = +bn;}
+    if (type === "number") { an = +an; bn = +bn; }
     return (an - bn) * desc;
   }).forEach(line => list.appendChild(line));
 }
@@ -132,6 +132,7 @@ function removeElementOnKey() {
 }
 
 function addBurg(point) {
+  console.log('addBurg')
   const cells = pack.cells;
   const x = rn(point[0], 2), y = rn(point[1], 2);
   const cell = findCell(x, point[1]);
@@ -142,13 +143,13 @@ function addBurg(point) {
   const feature = cells.f[cell];
 
   const population = Math.max((cells.s[cell] + cells.road[cell]) / 3 + i / 1000 + cell % 100 / 1000, .1);
-  pack.burgs.push({name, cell, x, y, state, i, culture, feature, capital: false, port: 0, population});
+  pack.burgs.push({ name, cell, x, y, state, i, culture, feature, capital: false, port: 0, population });
   cells.burg[cell] = i;
 
   const townSize = burgIcons.select("#towns").attr("size") || 0.5;
-  burgIcons.select("#towns").append("circle").attr("id", "burg"+i).attr("data-id", i)
+  burgIcons.select("#towns").append("circle").attr("id", "burg" + i).attr("data-id", i)
     .attr("cx", x).attr("cy", y).attr("r", townSize);
-  burgLabels.select("#towns").append("text").attr("id", "burgLabel"+i).attr("data-id", i)
+  burgLabels.select("#towns").append("text").attr("id", "burgLabel" + i).attr("data-id", i)
     .attr("x", x).attr("y", y).attr("dy", `${townSize * -1.5}px`).text(name);
 
   return i;
@@ -158,17 +159,17 @@ function moveBurgToGroup(id, g) {
   const label = document.querySelector("#burgLabels [data-id='" + id + "']");
   const icon = document.querySelector("#burgIcons [data-id='" + id + "']");
   const anchor = document.querySelector("#anchors [data-id='" + id + "']");
-  if (!label || !icon) {console.error("Cannot find label or icon elements"); return;}
+  if (!label || !icon) { console.error("Cannot find label or icon elements"); return; }
 
-  document.querySelector("#burgLabels > #"+g).appendChild(label);
-  document.querySelector("#burgIcons > #"+g).appendChild(icon);
+  document.querySelector("#burgLabels > #" + g).appendChild(label);
+  document.querySelector("#burgIcons > #" + g).appendChild(icon);
 
   const iconSize = icon.parentNode.getAttribute("size");
   icon.setAttribute("r", iconSize);
   label.setAttribute("dy", `${iconSize * -1.5}px`);
 
   if (anchor) {
-    document.querySelector("#anchors > #"+g).appendChild(anchor);
+    document.querySelector("#anchors > #" + g).appendChild(anchor);
     const anchorSize = +anchor.parentNode.getAttribute("size");
     anchor.setAttribute("width", anchorSize);
     anchor.setAttribute("height", anchorSize);

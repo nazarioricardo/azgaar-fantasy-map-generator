@@ -15,7 +15,7 @@ function editBiomes() {
 
   $("#biomesEditor").dialog({
     title: "Biomes Editor", width: fitContent(), close: closeBiomesEditor,
-    position: {my: "right top", at: "right-10 top+10", of: "svg"}
+    position: { my: "right top", at: "right-10 top+10", of: "svg" }
   });
 
   // add listeners
@@ -97,7 +97,7 @@ function editBiomes() {
     body.querySelectorAll("div > input.biomeName").forEach(el => el.addEventListener("input", biomeChangeName));
     body.querySelectorAll("div > input.biomeHabitability").forEach(el => el.addEventListener("change", biomeChangeHabitability));
 
-    if (body.dataset.type === "percentage") {body.dataset.type = "absolute"; togglePercentageMode();}
+    if (body.dataset.type === "percentage") { body.dataset.type = "absolute"; togglePercentageMode(); }
     applySorting(biomesHeader);
     $("#biomesEditor").dialog();
   }
@@ -105,22 +105,22 @@ function editBiomes() {
   function biomeHighlightOn(event) {
     if (customization === 6) return;
     const biome = +event.target.dataset.id;
-    biomes.select("#biome"+biome).raise().transition(animate).attr("stroke-width", 2).attr("stroke", "#cd4c11");
+    biomes.select("#biome" + biome).raise().transition(animate).attr("stroke-width", 2).attr("stroke", "#cd4c11");
   }
 
   function biomeHighlightOff(event) {
     if (customization === 6) return;
     const biome = +event.target.dataset.id;
     const color = biomesData.color[biome];
-    biomes.select("#biome"+biome).transition().attr("stroke-width", .7).attr("stroke", color);
+    biomes.select("#biome" + biome).transition().attr("stroke-width", .7).attr("stroke", color);
   }
-  
+
   function biomeChangeColor() {
     const biome = +this.parentNode.dataset.id;
     biomesData.color[biome] = this.value;
-    biomes.select("#biome"+biome).attr("fill", this.value).attr("stroke", this.value);  
+    biomes.select("#biome" + biome).attr("fill", this.value).attr("stroke", this.value);
   }
-  
+
   function biomeChangeName() {
     const biome = +this.parentNode.dataset.id;
     this.parentNode.dataset.name = this.value;
@@ -146,12 +146,12 @@ function editBiomes() {
       body.dataset.type = "percentage";
       const totalCells = +biomesFooterCells.innerHTML;
       const totalArea = +biomesFooterArea.dataset.area;
-      const totalPopulation = +biomesFooterPopulation.dataset.population;      
+      const totalPopulation = +biomesFooterPopulation.dataset.population;
 
-      body.querySelectorAll(":scope>  div").forEach(function(el) {
+      body.querySelectorAll(":scope>  div").forEach(function (el) {
         el.querySelector(".biomeCells").innerHTML = rn(+el.dataset.cells / totalCells * 100) + "%";
         el.querySelector(".biomeArea").innerHTML = rn(+el.dataset.area / totalArea * 100) + "%";
-        el.querySelector(".biomePopulation").innerHTML = rn(+el.dataset.population / totalPopulation * 100) + "%";        
+        el.querySelector(".biomePopulation").innerHTML = rn(+el.dataset.population / totalPopulation * 100) + "%";
       });
     } else {
       body.dataset.type = "absolute";
@@ -166,9 +166,9 @@ function editBiomes() {
 
   function downloadBiomesData() {
     const unit = areaUnit.value === "square" ? distanceUnit.value + "2" : areaUnit.value;
-    let data = "Id,Biome,Color,Habitability,Cells,Area "+unit+",Population\n"; // headers
+    let data = "Id,Biome,Color,Habitability,Cells,Area " + unit + ",Population\n"; // headers
 
-    body.querySelectorAll(":scope > div").forEach(function(el) {
+    body.querySelectorAll(":scope > div").forEach(function (el) {
       data += el.dataset.id + ",";
       data += el.dataset.name + ",";
       data += el.dataset.color + ",";
@@ -178,14 +178,14 @@ function editBiomes() {
       data += el.dataset.population + "\n";
     });
 
-    const dataBlob = new Blob([data], {type: "text/plain"});
+    const dataBlob = new Blob([data], { type: "text/plain" });
     const url = window.URL.createObjectURL(dataBlob);
     const link = document.createElement("a");
     document.body.appendChild(link);
     link.download = "biomes_data" + Date.now() + ".csv";
     link.href = url;
     link.click();
-    window.setTimeout(function() {window.URL.revokeObjectURL(url);}, 2000);    
+    window.setTimeout(function () { window.URL.revokeObjectURL(url); }, 2000);
   }
 
   function enterBiomesCustomizationMode() {
@@ -213,25 +213,27 @@ function editBiomes() {
   }
 
   function selectBiomeOnMapClick() {
+    console.log('selectBiomeOnMapClick')
     const point = d3.mouse(this);
     const i = findCell(point[0], point[1]);
-    if (pack.cells.h[i] < 20) {tip("You cannot reassign water via biomes. Please edit the Heightmap to change water", false, "error"); return;}
+    if (pack.cells.h[i] < 20) { tip("You cannot reassign water via biomes. Please edit the Heightmap to change water", false, "error"); return; }
 
-    const assigned = biomes.select("#temp").select("polygon[data-cell='"+i+"']");
+    const assigned = biomes.select("#temp").select("polygon[data-cell='" + i + "']");
     const biome = assigned.size() ? +assigned.attr("data-biome") : pack.cells.biome[i];
 
     body.querySelector("div.selected").classList.remove("selected");
-    body.querySelector("div[data-id='"+biome+"']").classList.add("selected");    
+    body.querySelector("div[data-id='" + biome + "']").classList.add("selected");
   }
 
   function dragBiomeBrush() {
+    console.log('dragBiomeBrush')
     const p = d3.mouse(this);
     const r = +biomesManuallyBrush.value;
     moveCircle(p[0], p[1], r);
-   
+
     const found = r > 5 ? findAll(p[0], p[1], r) : [findCell(p[0], p[1], r)];
     const selection = found.filter(isLand);
-    if (selection) changeBiomeForSelection(selection);    
+    if (selection) changeBiomeForSelection(selection);
   }
 
   // change region within selection
@@ -242,8 +244,8 @@ function editBiomes() {
     const biomeNew = selected.dataset.id;
     const color = biomesData.color[biomeNew];
 
-    selection.forEach(function(i) {
-      const exists = temp.select("polygon[data-cell='"+i+"']");
+    selection.forEach(function (i) {
+      const exists = temp.select("polygon[data-cell='" + i + "']");
       const biomeOld = exists.size() ? +exists.attr("data-biome") : pack.cells.biome[i];
       if (biomeNew === biomeOld) return;
 
@@ -259,15 +261,15 @@ function editBiomes() {
     const radius = +biomesManuallyBrush.value;
     moveCircle(point[0], point[1], radius);
   }
-  
+
   function applyBiomesChange() {
     const changed = biomes.select("#temp").selectAll("polygon");
-    changed.each(function() {
+    changed.each(function () {
       const i = +this.dataset.cell;
       const b = +this.dataset.biome;
       pack.cells.biome[i] = b;
     });
-    
+
     if (changed.size()) {
       drawBiomes();
       refreshBiomesEditor();
@@ -285,9 +287,9 @@ function editBiomes() {
     restoreDefaultEvents();
     clearMainTip();
     const selected = document.querySelector("#biomesBody > div.selected");
-    if (selected) selected.classList.remove("selected");        
+    if (selected) selected.classList.remove("selected");
   }
-  
+
   function restoreInitialBiomes() {
     biomesData = applyDefaultBiomesSystem();
     defineBiomes();

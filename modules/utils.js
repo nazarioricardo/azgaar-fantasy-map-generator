@@ -25,7 +25,7 @@ function getBoundaryPoints(width, height, spacing) {
 function getJitteredGrid(width, height, spacing) {
   const radius = spacing / 2; // square radius
   const jittering = radius * 0.9; // max deviation
-  const jitter = function() {return Math.random() * 2 * jittering - jittering;};
+  const jitter = function () { return Math.random() * 2 * jittering - jittering; };
   let points = [];
   for (let y = radius; y < height; y += spacing) {
     for (let x = radius; x < width; x += spacing) {
@@ -39,7 +39,7 @@ function getJitteredGrid(width, height, spacing) {
 
 // return cell index on a regular square grid
 function findGridCell(x, y) {
-  return Math.floor(Math.min(y / grid.spacing, grid.cellsY -1)) * grid.cellsX + Math.floor(Math.min(x / grid.spacing, grid.cellsX-1));
+  return Math.floor(Math.min(y / grid.spacing, grid.cellsY - 1)) * grid.cellsX + Math.floor(Math.min(x / grid.spacing, grid.cellsX - 1));
 }
 
 // return array of cell indexes in radius  on a regular square grid
@@ -47,15 +47,15 @@ function findGridAll(x, y, radius) {
   const c = grid.cells.c;
   let found = [findGridCell(x, y)];
   let r = Math.floor(radius / grid.spacing);
-  if (r > 0) found = found.concat(c[found[0]]); 
+  if (r > 0) found = found.concat(c[found[0]]);
   if (r > 1) {
     let frontier = c[found[0]];
     while (r > 1) {
       let cycle = frontier.slice();
       frontier = [];
-      cycle.forEach(function(s) {
+      cycle.forEach(function (s) {
 
-        c[s].forEach(function(e) {
+        c[s].forEach(function (e) {
           if (found.indexOf(e) !== -1) return;
           found.push(e);
           frontier.push(e);
@@ -65,7 +65,7 @@ function findGridAll(x, y, radius) {
       r--;
     }
   }
-  
+
   return found;
 
 }
@@ -175,27 +175,27 @@ function highest(a, b) {
 }
 
 // convert RGB color string to HEX without #
-function toHEX(rgb){
-  if (rgb.charAt(0) === "#") {return rgb;}
+function toHEX(rgb) {
+  if (rgb.charAt(0) === "#") { return rgb; }
   rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-    return (rgb && rgb.length === 4) ? "#" +
-    ("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
-    ("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
-    ("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
+  return (rgb && rgb.length === 4) ? "#" +
+    ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+    ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+    ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
 }
 
 // return array of standard shuffled colors
 function getColors(number) {
   const c12 = d3.scaleOrdinal(d3.schemeSet3);
   const cRB = d3.scaleSequential(d3.interpolateRainbow);
-  const colors = d3.shuffle(d3.range(number).map(i => i < 12 ? c12(i) : d3.color(cRB((i-12)/(number-12))).hex()));
+  const colors = d3.shuffle(d3.range(number).map(i => i < 12 ? c12(i) : d3.color(cRB((i - 12) / (number - 12))).hex()));
   //debug.selectAll("circle").data(colors).enter().append("circle").attr("r", 15).attr("cx", (d,i) => 60 + i * 40).attr("cy", 20).attr("fill", d => d);
   return colors;
 }
 
 // conver temperature from °C to other scales
 function convertTemperature(c) {
-  switch(temperatureScale.value) {
+  switch (temperatureScale.value) {
     case "°C": return c + "°C";
     case "°F": return rn(c * 9 / 5 + 32) + "°F";
     case "K": return rn(c + 273.15) + "K";
@@ -211,7 +211,7 @@ function convertTemperature(c) {
 // random number in a range
 function rand(min, max) {
   if (min === undefined && !max === undefined) return Math.random();
-  if (max === undefined) {max = min; min = 0;}
+  if (max === undefined) { max = min; min = 0; }
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -227,16 +227,16 @@ function rn(v, d = 0) {
 
 // round string to d decimals
 function round(s, d = 1) {
-   return s.replace(/[\d\.-][\d\.e-]*/g, function(n) {return rn(n, d);})
+  return s.replace(/[\d\.-][\d\.e-]*/g, function (n) { return rn(n, d); })
 }
 
 // corvent number to short string with SI postfix
 function si(n) {
-  if (n >= 1e9) {return rn(n / 1e9, 1) + "B";}
-  if (n >= 1e8) {return rn(n / 1e6) + "M";}
-  if (n >= 1e6) {return rn(n / 1e6, 1) + "M";}
-  if (n >= 1e4) {return rn(n / 1e3) + "K";}
-  if (n >= 1e3) {return rn(n / 1e3, 1) + "K";}
+  if (n >= 1e9) { return rn(n / 1e9, 1) + "B"; }
+  if (n >= 1e8) { return rn(n / 1e6) + "M"; }
+  if (n >= 1e6) { return rn(n / 1e6, 1) + "M"; }
+  if (n >= 1e4) { return rn(n / 1e3) + "K"; }
+  if (n >= 1e3) { return rn(n / 1e3, 1) + "K"; }
   return rn(n);
 }
 
@@ -261,14 +261,14 @@ function capitalize(string) {
 
 // transform string to array [translateX,translateY,rotateDeg,rotateX,rotateY,scale]
 function parseTransform(string) {
-  if (!string) {return [0,0,0,0,0,1];}
+  if (!string) { return [0, 0, 0, 0, 0, 1]; }
   const a = string.replace(/[a-z()]/g, "").replace(/[ ]/g, ",").split(",");
   return [a[0] || 0, a[1] || 0, a[2] || 0, a[3] || 0, a[4] || 0, a[5] || 1];
 }
 
 // findAll d3.quandtree search from https://bl.ocks.org/lwthatcher/b41479725e0ff2277c7ac90df2de2b5e
 void function addFindAll() {
-  const Quad = function(node, x0, y0, x1, y1) {
+  const Quad = function (node, x0, y0, x1, y1) {
     this.node = node;
     this.x0 = x0;
     this.y0 = y0;
@@ -276,9 +276,9 @@ void function addFindAll() {
     this.y1 = y1;
   }
 
-  const tree_filter = function(x, y, radius) {
-    var t = {x, y, x0: this._x0, y0: this._y0, x3: this._x1, y3: this._y1, quads: [], node: this._root};
-    if (t.node) {t.quads.push(new Quad(t.node, t.x0, t.y0, t.x3, t.y3))};
+  const tree_filter = function (x, y, radius) {
+    var t = { x, y, x0: this._x0, y0: this._y0, x3: this._x1, y3: this._y1, quads: [], node: this._root };
+    if (t.node) { t.quads.push(new Quad(t.node, t.x0, t.y0, t.x3, t.y3)) };
     radiusSearchInit(t, radius);
 
     var i = 0;
@@ -287,16 +287,16 @@ void function addFindAll() {
 
       // Stop searching if this quadrant can’t contain a closer node.
       if (!(t.node = t.q.node)
-          || (t.x1 = t.q.x0) > t.x3
-          || (t.y1 = t.q.y0) > t.y3
-          || (t.x2 = t.q.x1) < t.x0
-          || (t.y2 = t.q.y1) < t.y0) continue;
+        || (t.x1 = t.q.x0) > t.x3
+        || (t.y1 = t.q.y0) > t.y3
+        || (t.x2 = t.q.x1) < t.x0
+        || (t.y2 = t.q.y1) < t.y0) continue;
 
       // Bisect the current quadrant.
       if (t.node.length) {
         t.node.explored = true;
         var xm = (t.x1 + t.x2) / 2,
-            ym = (t.y1 + t.y2) / 2;
+          ym = (t.y1 + t.y2) / 2;
 
         t.quads.push(
           new Quad(t.node[3], xm, ym, t.x2, t.y2),
@@ -316,8 +316,8 @@ void function addFindAll() {
       // Visit this point. (Visiting coincident points isn’t necessary!)
       else {
         var dx = x - +this._x.call(null, t.node.data),
-            dy = y - +this._y.call(null, t.node.data),
-            d2 = dx * dx + dy * dy;
+          dy = y - +this._y.call(null, t.node.data),
+          d2 = dx * dx + dy * dy;
         radiusSearchVisit(t, d2);
       }
     }
@@ -325,19 +325,19 @@ void function addFindAll() {
   }
   d3.quadtree.prototype.findAll = tree_filter;
 
-  var radiusSearchInit = function(t, radius) {
+  var radiusSearchInit = function (t, radius) {
     t.result = [];
     t.x0 = t.x - radius, t.y0 = t.y - radius;
     t.x3 = t.x + radius, t.y3 = t.y + radius;
     t.radius = radius * radius;
   }
 
-  var radiusSearchVisit = function(t, d2) {
+  var radiusSearchVisit = function (t, d2) {
     t.node.data.scanned = true;
     if (d2 < t.radius) {
-      do {t.result.push(t.node.data); t.node.data.selected = true;} while (t.node = t.node.next);
+      do { t.result.push(t.node.data); t.node.data.selected = true; } while (t.node = t.node.next);
     }
-  }  
+  }
 }()
 
 // normalization function
@@ -374,20 +374,20 @@ function lim(v) {
 
 // get number from string in format "1-3" or "2" or "0.5"
 function getNumberInRange(r) {
-  if (typeof r !== "string") {console.error("The value should be a string", r); return 0;}
+  if (typeof r !== "string") { console.error("The value should be a string", r); return 0; }
   if (!isNaN(+r)) return +r;
   const sign = r[0] === "-" ? -1 : 1;
-  if (isNaN(+r[0])) r = r.slice(1);  
+  if (isNaN(+r[0])) r = r.slice(1);
   const range = r.includes("-") ? r.split("-") : null;
-  if (!range) {console.error("Cannot parse the number. Check the format", r); return 0;}
+  if (!range) { console.error("Cannot parse the number. Check the format", r); return 0; }
   const count = rand(range[0] * sign, +range[1]);
-  if (isNaN(count) || count < 0) {console.error("Cannot parse number. Check the format", r); return 0;}
+  if (isNaN(count) || count < 0) { console.error("Cannot parse number. Check the format", r); return 0; }
   return count;
 }
 
 function analizeNamesbase() {
   const result = [];
-  nameBases.forEach((b,i) => {
+  nameBases.forEach((b, i) => {
     const d = nameBase[i];
     const size = d.length;
     const ar = d.map(n => n.length);
@@ -397,17 +397,17 @@ function analizeNamesbase() {
     const median = d3.median(ar);
     const lengths = new Uint8Array(max);
     ar.forEach(l => lengths[l]++);
-    const common = d3.scan(lengths, (a,b) => b-a);
+    const common = d3.scan(lengths, (a, b) => b - a);
     const string = d.join("");
     const doubleArray = [];
     let double = "";
-    for (let i=0; i<string.length; i++) {
+    for (let i = 0; i < string.length; i++) {
       if (!doubleArray[string[i]]) doubleArray[string[i]] = 0;
-      if (string[i] === string[i-1]) doubleArray[string[i]]++;
+      if (string[i] === string[i - 1]) doubleArray[string[i]]++;
     }
-    for (const l in doubleArray) {if(doubleArray[l] > size/35) double += l;}
-    const multi = rn(d3.mean(d.map(n => (n.match(/ /g)||[]).length)),2);
-    result.push({name:b.name, size, min, max, mean, median, common, double, multi});
+    for (const l in doubleArray) { if (doubleArray[l] > size / 35) double += l; }
+    const multi = rn(d3.mean(d.map(n => (n.match(/ /g) || []).length)), 2);
+    result.push({ name: b.name, size, min, max, mean, median, common, double, multi });
   });
   console.table(result);
 }
@@ -424,7 +424,7 @@ function getComposedPath(node) {
 
 // get next unused id
 function getNextId(core, i = 1) {
-  while (document.getElementById(core+i)) i++;
+  while (document.getElementById(core + i)) i++;
   return core + i;
 }
 
@@ -438,9 +438,9 @@ function getAbsolutePath(href) {
 // from https://davidwalsh.name/javascript-debounce-function
 function debounce(func, wait, immediate) {
   var timeout;
-  return function() {
+  return function () {
     var context = this, args = arguments;
-    var later = function() {
+    var later = function () {
       timeout = null;
       if (!immediate) func.apply(context, args);
     }

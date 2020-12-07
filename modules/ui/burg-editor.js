@@ -16,7 +16,7 @@ function editBurg() {
 
   $("#burgEditor").dialog({
     title: "Edit Burg: " + elSelected.text(), resizable: false,
-    position: {my, at, of: d3.event.target, collision: "fit"},
+    position: { my, at, of: d3.event.target, collision: "fit" },
     close: closeBurgEditor
   });
 
@@ -46,9 +46,9 @@ function editBurg() {
     const tr = parseTransform(this.getAttribute("transform"));
     const dx = +tr[0] - d3.event.x, dy = +tr[1] - d3.event.y;
 
-    d3.event.on("drag", function() {
+    d3.event.on("drag", function () {
       const x = d3.event.x, y = d3.event.y;
-      this.setAttribute("transform", `translate(${(dx+x)},${(dy+y)})`);
+      this.setAttribute("transform", `translate(${(dx + x)},${(dy + y)})`);
       tip('Use dragging for fine-tuning only, to actually move burg use "Relocate" button', false, "warning");
     });
   }
@@ -58,7 +58,7 @@ function editBurg() {
     const select = document.getElementById("burgSelectGroup");
     select.options.length = 0; // remove all options
 
-    burgLabels.selectAll("g").each(function() {
+    burgLabels.selectAll("g").each(function () {
       select.options.add(new Option(this.id, this.id, false, this.id === group));
     });
   }
@@ -73,7 +73,7 @@ function editBurg() {
     document.getElementById("burgGroupSection").style.display = "none";
     document.getElementById("burgInputGroup").style.display = "none";
     document.getElementById("burgInputGroup").value = "";
-    document.getElementById("burgSelectGroup").style.display = "inline-block"; 
+    document.getElementById("burgSelectGroup").style.display = "inline-block";
   }
 
   function changeGroup() {
@@ -93,7 +93,7 @@ function editBurg() {
   }
 
   function createNewGroup() {
-    if (!this.value) {tip("Please provide a valid group name"); return;}
+    if (!this.value) { tip("Please provide a valid group name"); return; }
     let group = this.value.toLowerCase().replace(/ /g, "_").replace(/[^\w\s]/gi, "");
     if (Number.isFinite(+group.charAt(0))) group = "g" + group;
 
@@ -108,11 +108,11 @@ function editBurg() {
     const label = document.querySelector("#burgLabels [data-id='" + id + "']");
     const icon = document.querySelector("#burgIcons [data-id='" + id + "']");
     const anchor = document.querySelector("#anchors [data-id='" + id + "']");
-    if (!label || !icon) {console.error("Cannot find label or icon elements"); return;}
+    if (!label || !icon) { console.error("Cannot find label or icon elements"); return; }
 
-    const labelG = document.querySelector("#burgLabels > #"+oldGroup);
-    const iconG = document.querySelector("#burgIcons > #"+oldGroup);
-    const anchorG = document.querySelector("#anchors > #"+oldGroup);
+    const labelG = document.querySelector("#burgLabels > #" + oldGroup);
+    const iconG = document.querySelector("#burgIcons > #" + oldGroup);
+    const anchorG = document.querySelector("#anchors > #" + oldGroup);
 
     // just rename if only 1 element left
     const count = elSelected.node().parentNode.childElementCount;
@@ -148,7 +148,7 @@ function editBurg() {
     const basic = group.id === "cities" || group.id === "towns";
 
     const burgsInGroup = [];
-    for (let i=0; i < group.children.length; i++) {
+    for (let i = 0; i < group.children.length; i++) {
       burgsInGroup.push(+group.children[i].dataset.id);
     }
     const burgsToRemove = burgsInGroup.filter(b => !pack.burgs[b].capital);
@@ -158,9 +158,10 @@ function editBurg() {
       ${basic || capital ? "all elements in the group" : "the entire burg group"}?
       <br>Please note that capital burgs will not be deleted.
       <br><br>Burgs to be removed: ${burgsToRemove.length}`;
-    $("#alert").dialog({resizable: false, title: "Remove route group",
+    $("#alert").dialog({
+      resizable: false, title: "Remove route group",
       buttons: {
-        Remove: function() {
+        Remove: function () {
           $(this).dialog("close");
           $("#burgEditor").dialog("close");
           hideGroupSection();
@@ -168,15 +169,15 @@ function editBurg() {
 
           if (!basic && !capital) {
             // entirely remove group
-            const labelG = document.querySelector("#burgLabels > #"+group.id);
-            const iconG = document.querySelector("#burgIcons > #"+group.id);
-            const anchorG = document.querySelector("#anchors > #"+group.id);
+            const labelG = document.querySelector("#burgLabels > #" + group.id);
+            const iconG = document.querySelector("#burgIcons > #" + group.id);
+            const anchorG = document.querySelector("#anchors > #" + group.id);
             if (labelG) labelG.remove();
             if (iconG) iconG.remove();
             if (anchorG) anchorG.remove();
           }
         },
-        Cancel: function() {$(this).dialog("close");}
+        Cancel: function () { $(this).dialog("close"); }
       }
     });
   }
@@ -205,7 +206,7 @@ function editBurg() {
   }
 
   function generateNameRandom() {
-    const base = rand(nameBase.length-1);
+    const base = rand(nameBase.length - 1);
     burgNameInput.value = Names.getBase(base);
     changeName();
   }
@@ -239,15 +240,16 @@ function editBurg() {
     if (document.getElementById("burgRelocate").classList.contains("pressed")) {
       viewbox.style("cursor", "crosshair").on("click", relocateBurgOnClick);
       tip("Click on map to relocate burg. Hold Shift for continuous move", true);
-      if (!layerIsOn("toggleCells")) {toggleCells(); toggler.dataset.forced = true;}
+      if (!layerIsOn("toggleCells")) { toggleCells(); toggler.dataset.forced = true; }
     } else {
       clearMainTip();
       viewbox.on("click", clicked).style("cursor", "default");
-      if (layerIsOn("toggleCells") && toggler.dataset.forced) {toggleCells(); toggler.dataset.forced = false;}
+      if (layerIsOn("toggleCells") && toggler.dataset.forced) { toggleCells(); toggler.dataset.forced = false; }
     }
   }
 
   function relocateBurgOnClick() {
+    console.log('relocateBurgOnClick')
     const cells = pack.cells;
     const point = d3.mouse(this);
     const cell = findCell(point[0], point[1]);
@@ -276,7 +278,7 @@ function editBurg() {
     const x = rn(point[0], 2), y = rn(point[1], 2);
     burgIcons.select("[data-id='" + id + "']").attr("transform", null).attr("cx", x).attr("cy", y);
     burgLabels.select("text[data-id='" + id + "']").attr("transform", null).attr("x", x).attr("y", y);
-    const anchor = anchors.select("use[data-id='" + id+ "']");
+    const anchor = anchors.select("use[data-id='" + id + "']");
     if (anchor.size()) {
       const size = anchor.attr("width");
       const xa = rn(x - size * 0.47, 2);
@@ -299,7 +301,7 @@ function editBurg() {
   function editBurgLegend() {
     const id = elSelected.attr("data-id");
     const name = elSelected.text();
-    editLegends("burg"+id, name);
+    editLegends("burg" + id, name);
   }
 
   function removeSelectedBurg() {
@@ -309,19 +311,21 @@ function editBurg() {
     if (capital) {
       alertMessage.innerHTML = `You cannot remove the burg as it is a capital.<br><br>
         You can change the capital using the Burgs Editor`;
-      $("#alert").dialog({resizable: false, title: "Remove burg",
-        buttons: {Ok: function() {$(this).dialog("close");}}
+      $("#alert").dialog({
+        resizable: false, title: "Remove burg",
+        buttons: { Ok: function () { $(this).dialog("close"); } }
       });
     } else {
       alertMessage.innerHTML = "Are you sure you want to remove the burg?";
-      $("#alert").dialog({resizable: false, title: "Remove burg",
+      $("#alert").dialog({
+        resizable: false, title: "Remove burg",
         buttons: {
-          Remove: function() {
+          Remove: function () {
             $(this).dialog("close");
             removeBurg(id); // see Editors module
             $("#burgEditor").dialog("close");
           },
-          Cancel: function() {$(this).dialog("close");}
+          Cancel: function () { $(this).dialog("close"); }
         }
       });
     }

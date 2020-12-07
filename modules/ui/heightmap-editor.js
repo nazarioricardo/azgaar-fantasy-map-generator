@@ -12,12 +12,13 @@ function editHeightmap() {
     The secondary data will be kept with burgs placed on water being removed, 
     but the landmass change can cause unexpected data fluctuation and errors.</p>`;
 
-    $("#alert").dialog({resizable: false, title: "Edit Heightmap", width: 300,
+    $("#alert").dialog({
+      resizable: false, title: "Edit Heightmap", width: 300,
       buttons: {
-        Erase: function() {enterHeightmapEditMode("erase");},
-        Keep: function() {enterHeightmapEditMode("keep");},
-        Risk: function() {enterHeightmapEditMode("risk");},
-        Cancel: function() {$(this).dialog("close");}
+        Erase: function () { enterHeightmapEditMode("erase"); },
+        Keep: function () { enterHeightmapEditMode("keep"); },
+        Risk: function () { enterHeightmapEditMode("risk"); },
+        Cancel: function () { $(this).dialog("close"); }
       }
     });
   }()
@@ -36,8 +37,8 @@ function editHeightmap() {
   document.getElementById("perspectiveView").addEventListener("click", openPerspectivePanel);
   document.getElementById("finalizeHeightmap").addEventListener("click", finalizeHeightmap);
   document.getElementById("renderOcean").addEventListener("click", mockHeightmap);
-  document.getElementById("templateUndo").addEventListener("click", () => restoreHistory(edits.n-1));
-  document.getElementById("templateRedo").addEventListener("click", () => restoreHistory(edits.n+1));
+  document.getElementById("templateUndo").addEventListener("click", () => restoreHistory(edits.n - 1));
+  document.getElementById("templateRedo").addEventListener("click", () => restoreHistory(edits.n + 1));
 
   function enterHeightmapEditMode(type) {
     editHeightmap.layers = getLayersState();
@@ -78,7 +79,7 @@ function editHeightmap() {
     const layers = [];
     mapLayers.querySelectorAll("li").forEach(l => {
       if (l.id === "toggleScaleBar") return;
-      if (!l.classList.contains("buttonoff")) {layers.push(l.id); l.click();}
+      if (!l.classList.contains("buttonoff")) { layers.push(l.id); l.click(); }
     });
     return layers;
   }
@@ -246,9 +247,9 @@ function editHeightmap() {
         pack.cells.r[i] = r[g];
         pack.cells.conf[i] = conf[g];
         pack.cells.fl[i] = fl[g];
-        if (land && !biome[g]) pack.cells.biome[i] = getBiomeId(grid.cells.prec[g], grid.cells.temp[g]); else 
-        if (!land && biome[g]) pack.cells.biome[i] = 0; else
-        pack.cells.biome[i] = biome[g];
+        if (land && !biome[g]) pack.cells.biome[i] = getBiomeId(grid.cells.prec[g], grid.cells.temp[g]); else
+          if (!land && biome[g]) pack.cells.biome[i] = 0; else
+            pack.cells.biome[i] = biome[g];
       }
 
       if (!land) continue;
@@ -261,6 +262,7 @@ function editHeightmap() {
 
     for (const b of pack.burgs) {
       if (!b.i) continue;
+      console.log('b.cell = findCell(b.x, b.y);')
       b.cell = findCell(b.x, b.y);
       b.feature = pack.cells.f[b.cell];
       pack.cells.burg[b.cell] = b.i;
@@ -275,7 +277,7 @@ function editHeightmap() {
   // trigger heightmap redraw and history update if at least 1 cell is changed
   function updateHeightmap() {
     const prev = last(edits);
-    const changed = grid.cells.h.reduce((s, h, i) => h !== prev[i] ? s+1 : s, 0);
+    const changed = grid.cells.h.reduce((s, h, i) => h !== prev[i] ? s + 1 : s, 0);
     tip("Cells changed: " + changed);
     if (!changed) return;
 
@@ -295,7 +297,7 @@ function editHeightmap() {
     const data = renderOcean.checked ? grid.cells.i : grid.cells.i.filter(i => grid.cells.h[i] >= 20);
     const scheme = getColorScheme();
     terrs.selectAll("polygon").data(data).join("polygon").attr("points", d => getGridPolygon(d))
-      .attr("id", d => "cell"+d).attr("fill", d => getColor(grid.cells.h[d], scheme));
+      .attr("id", d => "cell" + d).attr("fill", d => getColor(grid.cells.h[d], scheme));
   }
 
   // draw or update heightmap for a selection of cells
@@ -303,18 +305,18 @@ function editHeightmap() {
     const ocean = renderOcean.checked;
     const scheme = getColorScheme();
 
-    selection.forEach(function(i) {
-      let cell = terrs.select("#cell"+i);
-      if (!ocean && grid.cells.h[i] < 20) {cell.remove(); return;}
-      if (!cell.size()) cell = terrs.append("polygon").attr("points", getGridPolygon(i)).attr("id", "cell"+i);
+    selection.forEach(function (i) {
+      let cell = terrs.select("#cell" + i);
+      if (!ocean && grid.cells.h[i] < 20) { cell.remove(); return; }
+      if (!cell.size()) cell = terrs.append("polygon").attr("points", getGridPolygon(i)).attr("id", "cell" + i);
       cell.attr("fill", getColor(grid.cells.h[i], scheme));
     });
   }
 
   function updateStatistics() {
-    const landCells = grid.cells.h.reduce((s, h) => h >= 20 ? s+1 : s);
-    landmassCounter.innerHTML = `${landCells} (${rn(landCells/grid.cells.i.length*100)}%)`;
-    landmassAverage.innerHTML = rn(d3.mean(grid.cells.h));    
+    const landCells = grid.cells.h.reduce((s, h) => h >= 20 ? s + 1 : s);
+    landmassCounter.innerHTML = `${landCells} (${rn(landCells / grid.cells.i.length * 100)}%)`;
+    landmassAverage.innerHTML = rn(d3.mean(grid.cells.h));
   }
 
   function updateHistory(noStat) {
@@ -340,7 +342,7 @@ function editHeightmap() {
     grid.cells.h = edits[edits.n - 1].slice();
     mockHeightmap();
     updateStatistics();
-    
+
     if (document.getElementById("preview")) drawHeightmapPreview(); // update heightmap preview if opened
     if ($("#perspectivePanel").is(":visible")) drawPerspective(); // update perspective view if opened    
   }
@@ -358,7 +360,7 @@ function editHeightmap() {
     if ($("#brushesPanel").is(":visible")) return;
     $("#brushesPanel").dialog({
       title: "Paint Brushes", minHeight: 40, width: "auto", maxWidth: 200, resizable: false,
-      position: {my: "right top", at: "right-10 top+10", of: "svg"}
+      position: { my: "right top", at: "right-10 top+10", of: "svg" }
     }).on('dialogclose', exitBrushMode);
 
     if (modules.openBrushesPanel) return;
@@ -367,16 +369,16 @@ function editHeightmap() {
     // add listeners
     document.getElementById("brushesButtons").addEventListener("click", e => toggleBrushMode(e));
     document.getElementById("changeOnlyLand").addEventListener("click", e => changeOnlyLandClick(e));
-    document.getElementById("undo").addEventListener("click", () => restoreHistory(edits.n-1));
-    document.getElementById("redo").addEventListener("click", () => restoreHistory(edits.n+1));  
+    document.getElementById("undo").addEventListener("click", () => restoreHistory(edits.n - 1));
+    document.getElementById("redo").addEventListener("click", () => restoreHistory(edits.n + 1));
     document.getElementById("rescaleShow").addEventListener("click", () => {
       document.getElementById("modifyButtons").style.display = "none";
-      document.getElementById("rescaleSection").style.display = "block";    
+      document.getElementById("rescaleSection").style.display = "block";
     });
     document.getElementById("rescaleHide").addEventListener("click", () => {
       document.getElementById("modifyButtons").style.display = "block";
-      document.getElementById("rescaleSection").style.display = "none";    
-    }); 
+      document.getElementById("rescaleSection").style.display = "none";
+    });
     document.getElementById("rescaler").addEventListener("change", (e) => rescale(e.target.valueAsNumber));
     document.getElementById("rescaleCondShow").addEventListener("click", () => {
       document.getElementById("modifyButtons").style.display = "none";
@@ -390,7 +392,7 @@ function editHeightmap() {
     document.getElementById("smoothHeights").addEventListener("click", smoothAllHeights);
     document.getElementById("disruptHeights").addEventListener("click", disruptAllHeights);
     document.getElementById("brushClear").addEventListener("click", startFromScratch);
-    
+
     function exitBrushMode() {
       const pressed = document.querySelector("#brushesButtons > button.pressed");
       if (!pressed) return;
@@ -402,7 +404,7 @@ function editHeightmap() {
     }
 
     function toggleBrushMode(e) {
-      if (e.target.classList.contains("pressed")) {exitBrushMode(); return;}
+      if (e.target.classList.contains("pressed")) { exitBrushMode(); return; }
       exitBrushMode();
       document.getElementById("brushesSliders").style.display = "block";
       e.target.classList.add("pressed");
@@ -419,7 +421,7 @@ function editHeightmap() {
         moveCircle(p[0], p[1], r, "#333");
         const inRadius = findGridAll(p[0], p[1], r);
         const selection = changeOnlyLand.checked ? inRadius.filter(i => grid.cells.h[i] >= 20) : inRadius;
-        if (selection && selection.length) changeHeightForSelection(selection, start);        
+        if (selection && selection.length) changeHeightForSelection(selection, start);
       });
 
       d3.event.on("end", updateHeightmap);
@@ -429,17 +431,17 @@ function editHeightmap() {
       const power = brushPower.valueAsNumber;
       const interpolate = d3.interpolateRound(power, 1);
       const land = changeOnlyLand.checked;
-      function lim(v) {return Math.max(Math.min(v, 100), land ? 20 : 0);}
+      function lim(v) { return Math.max(Math.min(v, 100), land ? 20 : 0); }
       const h = grid.cells.h;
 
       const brush = document.querySelector("#brushesButtons > button.pressed").id;
       if (brush === "brushRaise") s.forEach(i => h[i] = h[i] < 20 ? 20 : lim(h[i] + power)); else
-      if (brush === "brushElevate") s.forEach((i,d) => h[i] = lim(h[i] + interpolate(d/Math.max(s.length-1, 1)))); else
-      if (brush === "brushLower") s.forEach(i => h[i] = lim(h[i] - power)); else
-      if (brush === "brushDepress") s.forEach((i,d) => h[i] = lim(h[i] - interpolate(d/Math.max(s.length-1, 1)))); else
-      if (brush === "brushAlign") s.forEach(i => h[i] = lim(h[start])); else
-      if (brush === "brushSmooth") s.forEach(i => h[i] = rn((d3.mean(grid.cells.c[i].filter(i => land ? h[i] >= 20 : 1).map(c => h[c])) + h[i]*(10-power)) / (11-power),1)); else
-      if (brush === "brushDisrupt") s.forEach(i => h[i] = h[i] < 17 ? h[i] : lim(h[i] + power/2 - Math.random()*power));
+        if (brush === "brushElevate") s.forEach((i, d) => h[i] = lim(h[i] + interpolate(d / Math.max(s.length - 1, 1)))); else
+          if (brush === "brushLower") s.forEach(i => h[i] = lim(h[i] - power)); else
+            if (brush === "brushDepress") s.forEach((i, d) => h[i] = lim(h[i] - interpolate(d / Math.max(s.length - 1, 1)))); else
+              if (brush === "brushAlign") s.forEach(i => h[i] = lim(h[start])); else
+                if (brush === "brushSmooth") s.forEach(i => h[i] = rn((d3.mean(grid.cells.c[i].filter(i => land ? h[i] >= 20 : 1).map(c => h[c])) + h[i] * (10 - power)) / (11 - power), 1)); else
+                  if (brush === "brushDisrupt") s.forEach(i => h[i] = h[i] < 17 ? h[i] : lim(h[i] + power / 2 - Math.random() * power));
 
       mockHeightmapSelection(s);
       // updateHistory(); uncomment to update history every step
@@ -453,7 +455,7 @@ function editHeightmap() {
 
     function rescale(v) {
       const land = changeOnlyLand.checked;
-      grid.cells.h = grid.cells.h.map(h => land && (h < 20 || h+v < 20) ? h : lim(h+v));
+      grid.cells.h = grid.cells.h.map(h => land && (h < 20 || h + v < 20) ? h : lim(h + v));
       updateHeightmap();
       document.getElementById("rescaler").value = 0;
     }
@@ -462,15 +464,15 @@ function editHeightmap() {
       const range = rescaleLower.value + "-" + rescaleHigher.value;
       const operator = conditionSign.value;
       const operand = rescaleModifier.valueAsNumber;
-      if (Number.isNaN(operand)) {tip("Operand should be a number", false, "error"); return;}
-      if ((operator === "add" || operator === "subtract") && !Number.isInteger(operand)) {tip("Operand should be an integer", false, "error"); return;}
+      if (Number.isNaN(operand)) { tip("Operand should be a number", false, "error"); return; }
+      if ((operator === "add" || operator === "subtract") && !Number.isInteger(operand)) { tip("Operand should be an integer", false, "error"); return; }
 
       if (operator === "multiply") HeightmapGenerator.modify(range, 0, operand, 0); else
-      if (operator === "divide") HeightmapGenerator.modify(range, 0, 1 / operand, 0); else
-      if (operator === "add") HeightmapGenerator.modify(range, operand, 1, 0); else
-      if (operator === "subtract") HeightmapGenerator.modify(range, -1 * operand, 1, 0); else
-      if (operator === "exponent") HeightmapGenerator.modify(range, 0, 1, operand);
-      
+        if (operator === "divide") HeightmapGenerator.modify(range, 0, 1 / operand, 0); else
+          if (operator === "add") HeightmapGenerator.modify(range, operand, 1, 0); else
+            if (operator === "subtract") HeightmapGenerator.modify(range, -1 * operand, 1, 0); else
+              if (operator === "exponent") HeightmapGenerator.modify(range, 0, 1, operand);
+
       updateHeightmap();
     }
 
@@ -480,40 +482,40 @@ function editHeightmap() {
     }
 
     function disruptAllHeights() {
-      grid.cells.h = grid.cells.h.map(h => h < 17 ? h : lim(h + 2 - Math.random()*4));
+      grid.cells.h = grid.cells.h.map(h => h < 17 ? h : lim(h + 2 - Math.random() * 4));
       updateHeightmap();
     }
-  
+
     function startFromScratch() {
-      if (changeOnlyLand.checked) {tip("Not allowed when 'Change only land cells' mode is set", false, "error"); return;}
+      if (changeOnlyLand.checked) { tip("Not allowed when 'Change only land cells' mode is set", false, "error"); return; }
       const someHeights = grid.cells.h.some(h => h);
-      if (!someHeights) {tip("Heightmap is already cleared, please do not click twice if not required", false, "error"); return;}
+      if (!someHeights) { tip("Heightmap is already cleared, please do not click twice if not required", false, "error"); return; }
       grid.cells.h = new Uint8Array(grid.cells.i.length);
       terrs.selectAll("*").remove();
       updateHistory();
     }
-    
+
   }
 
   function openTemplateEditor() {
     if ($("#templateEditor").is(":visible")) return;
     $("#templateEditor").dialog({
       title: "Template Editor", minHeight: "auto", width: "fit-content", resizable: false,
-      position: {my: "right top", at: "right-10 top+10", of: "svg"}
+      position: { my: "right top", at: "right-10 top+10", of: "svg" }
     });
 
     if (modules.openTemplateEditor) return;
     modules.openTemplateEditor = true;
-    
-    $("#templateBody").sortable({items: "div:not(.elType)"});
+
+    $("#templateBody").sortable({ items: "div:not(.elType)" });
 
     // add listeners
     document.getElementById("templateTools").addEventListener("click", e => addStepOnClick(e));
-    document.getElementById("templateSelect").addEventListener("change", e => selectTemplate(e)); 
-    document.getElementById("templateRun").addEventListener("click", executeTemplate); 
-    document.getElementById("templateSave").addEventListener("click", downloadTemplate); 
-    document.getElementById("templateLoad").addEventListener("click", e => templateToLoad.click()); 
-    document.getElementById("templateToLoad").addEventListener("change", uploadTemplate); 
+    document.getElementById("templateSelect").addEventListener("change", e => selectTemplate(e));
+    document.getElementById("templateRun").addEventListener("click", executeTemplate);
+    document.getElementById("templateSave").addEventListener("click", downloadTemplate);
+    document.getElementById("templateLoad").addEventListener("click", e => templateToLoad.click());
+    document.getElementById("templateToLoad").addEventListener("change", uploadTemplate);
 
     function addStepOnClick(e) {
       if (e.target.tagName !== "BUTTON") return;
@@ -524,12 +526,12 @@ function editHeightmap() {
     }
 
     function addStep(type, count, dist, arg4, arg5) {
-      const body = document.getElementById("templateBody"); 
+      const body = document.getElementById("templateBody");
       body.insertAdjacentHTML("beforeend", getStepHTML(type, count, dist, arg4, arg5));
       const elDist = body.querySelector("div:last-child").querySelector(".templateDist");
       if (elDist) elDist.addEventListener("change", setRange);
       if (dist && elDist && elDist.tagName === "SELECT") {
-        for (const o of elDist.options) {if (o.value === dist) elDist.value = dist;}
+        for (const o of elDist.options) { if (o.value === dist) elDist.value = dist; }
         if (elDist.value !== dist) {
           const opt = document.createElement("option");
           opt.value = opt.innerHTML = dist;
@@ -541,18 +543,18 @@ function editHeightmap() {
 
     function getStepHTML(type, count, arg3, arg4, arg5) {
       const Trash = `<i class="icon-trash-empty pointer" data-tip="Remove the step" onclick="this.parentElement.remove()"></i>`;
-      const TempY = `<span>y:<input class="templateY" data-tip="Placement range percentage along Y axis (minY-maxY)" value=${arg5||"20-80"}></span>`;
-      const TempX = `<span>x:<input class="templateX" data-tip="Placement range percentage along X axis (minX-maxX)" value=${arg4||"15-85"}></span>`;
-      const Height = `<span>h:<input class="templateHeight" data-tip="Blob maximum height, use hyphen to get a random number in range" value=${arg3||"40-50"}></span>`;
-      const Count = `<span>n:<input class="templateCount" data-tip="Blobs to add, use hyphen to get a random number in range" value=${count||"1-2"}></span>`;
+      const TempY = `<span>y:<input class="templateY" data-tip="Placement range percentage along Y axis (minY-maxY)" value=${arg5 || "20-80"}></span>`;
+      const TempX = `<span>x:<input class="templateX" data-tip="Placement range percentage along X axis (minX-maxX)" value=${arg4 || "15-85"}></span>`;
+      const Height = `<span>h:<input class="templateHeight" data-tip="Blob maximum height, use hyphen to get a random number in range" value=${arg3 || "40-50"}></span>`;
+      const Count = `<span>n:<input class="templateCount" data-tip="Blobs to add, use hyphen to get a random number in range" value=${count || "1-2"}></span>`;
       const Type = `<div class="elType">${type}</div>`;
       const blob = `<div data-type="${type}">${Type}${Trash}${TempY}${TempX}${Height}${Count}</div>`;
 
       if (type === "Hill" || type === "Pit" || type === "Range" || type === "Trough") return blob;
-      if (type === "Strait") return `<div data-type="${type}">${Type}${Trash}<span>d:<select class="templateDist" data-tip="Strait direction"><option value="vertical" selected>vertical</option><option value="horizontal">horizontal</option></select></span><span>w:<input class="templateCount" data-tip="Strait width, use hyphen to get a random number in range" value=${count||"2-7"}></span></div>`;
-      if (type === "Add") return `<div data-type="${type}">${Type}${Trash}<span>to:<select class="templateDist" data-tip="Change only land or all cells"><option value="all" selected>all cells</option><option value="land">land only</option><option value="interval">interval</option></select></span><span>v:<input class="templateCount" data-tip="Add value to height of all cells (negative values are allowed)" type="number" value=${count||-10} min=-100 max=100 step=1></span></div>`;
-      if (type === "Multiply") return `<div data-type="${type}">${Type}${Trash}<span>to:<select class="templateDist" data-tip="Change only land or all cells"><option value="all" selected>all cells</option><option value="land">land only</option><option value="interval">interval</option></select></span><span>v:<input class="templateCount" data-tip="Multiply all cells Height by the value" type="number" value=${count||1.1} min=0 max=10 step=.1></span></div>`;
-      if (type === "Smooth") return `<div data-type="${type}">${Type}${Trash}<span>f:<input class="templateCount" data-tip="Set smooth fraction. 1 - full smooth, 2 - half-smooth, etc." type="number" min=1 max=10 value=${count||2}></span></div>`;
+      if (type === "Strait") return `<div data-type="${type}">${Type}${Trash}<span>d:<select class="templateDist" data-tip="Strait direction"><option value="vertical" selected>vertical</option><option value="horizontal">horizontal</option></select></span><span>w:<input class="templateCount" data-tip="Strait width, use hyphen to get a random number in range" value=${count || "2-7"}></span></div>`;
+      if (type === "Add") return `<div data-type="${type}">${Type}${Trash}<span>to:<select class="templateDist" data-tip="Change only land or all cells"><option value="all" selected>all cells</option><option value="land">land only</option><option value="interval">interval</option></select></span><span>v:<input class="templateCount" data-tip="Add value to height of all cells (negative values are allowed)" type="number" value=${count || -10} min=-100 max=100 step=1></span></div>`;
+      if (type === "Multiply") return `<div data-type="${type}">${Type}${Trash}<span>to:<select class="templateDist" data-tip="Change only land or all cells"><option value="all" selected>all cells</option><option value="land">land only</option><option value="interval">interval</option></select></span><span>v:<input class="templateCount" data-tip="Multiply all cells Height by the value" type="number" value=${count || 1.1} min=0 max=10 step=.1></span></div>`;
+      if (type === "Smooth") return `<div data-type="${type}">${Type}${Trash}<span>f:<input class="templateCount" data-tip="Set smooth fraction. 1 - full smooth, 2 - half-smooth, etc." type="number" min=1 max=10 value=${count || 2}></span></div>`;
     }
 
     function setRange(event) {
@@ -569,14 +571,16 @@ function editHeightmap() {
       const body = document.getElementById("templateBody");
       const steps = body.querySelectorAll("div").length;
       const changed = +body.getAttribute("data-changed");
-      const template = e.target.value;      
-      if (!steps || !changed) {changeTemplate(template); return;}
+      const template = e.target.value;
+      if (!steps || !changed) { changeTemplate(template); return; }
 
       alertMessage.innerHTML = "Are you sure you want to select a different template? All changes will be lost.";
-      $("#alert").dialog({resizable: false, title: "Change Template",
+      $("#alert").dialog({
+        resizable: false, title: "Change Template",
         buttons: {
-          Change: function() {changeTemplate(template); $(this).dialog("close");},
-          Cancel: function() {$(this).dialog("close");}}
+          Change: function () { changeTemplate(template); $(this).dialog("close"); },
+          Cancel: function () { $(this).dialog("close"); }
+        }
       });
     }
 
@@ -658,7 +662,7 @@ function editHeightmap() {
         addStep("Hill", ".5", "30-50", "25-35", "30-70");
         addStep("Smooth", 1);
         addStep("Multiply", .2, "25-100");
-        addStep("Hill", ".5", "10-20", "50-55", "48-52"); 
+        addStep("Hill", ".5", "10-20", "50-55", "48-52");
       }
 
       else if (template === "templateMediterranean") {
@@ -735,13 +739,13 @@ function editHeightmap() {
         const y = templateY ? templateY.value : null;
 
         if (type === "Hill") HeightmapGenerator.addHill(elCount.value, elHeight.value, x, y); else
-        if (type === "Pit") HeightmapGenerator.addPit(elCount.value, elHeight.value, x, y); else
-        if (type === "Range") HeightmapGenerator.addRange(elCount.value, elHeight.value, x, y); else
-        if (type === "Trough") HeightmapGenerator.addTrough(elCount.value, elHeight.value, x, y); else
-        if (type === "Strait") HeightmapGenerator.addStrait(elCount.value, dist); else
-        if (type === "Add") HeightmapGenerator.modify(dist, +elCount.value, 1); else
-        if (type === "Multiply") HeightmapGenerator.modify(dist, 0, +elCount.value); else
-        if (type === "Smooth") HeightmapGenerator.smooth(+elCount.value);
+          if (type === "Pit") HeightmapGenerator.addPit(elCount.value, elHeight.value, x, y); else
+            if (type === "Range") HeightmapGenerator.addRange(elCount.value, elHeight.value, x, y); else
+              if (type === "Trough") HeightmapGenerator.addTrough(elCount.value, elHeight.value, x, y); else
+                if (type === "Strait") HeightmapGenerator.addStrait(elCount.value, dist); else
+                  if (type === "Add") HeightmapGenerator.modify(dist, +elCount.value, 1); else
+                    if (type === "Multiply") HeightmapGenerator.modify(dist, 0, +elCount.value); else
+                      if (type === "Smooth") HeightmapGenerator.smooth(+elCount.value);
 
         updateHistory("noStat"); // update history every step
       }
@@ -771,7 +775,7 @@ function editHeightmap() {
         stepsData += `${type} ${count} ${arg3} ${x} ${y}\r\n`;
       }
 
-      const dataBlob = new Blob([stepsData], {type: "text/plain"});
+      const dataBlob = new Blob([stepsData], { type: "text/plain" });
       const url = window.URL.createObjectURL(dataBlob);
       const link = document.createElement("a");
       link.download = "template_" + Date.now() + ".txt";
@@ -786,18 +790,18 @@ function editHeightmap() {
       el.value = "";
       const fileReader = new FileReader();
 
-      fileReader.onload = function(e) {
+      fileReader.onload = function (e) {
         const dataLoaded = e.target.result;
         const steps = dataLoaded.split("\r\n");
-        if (!steps.length) {tip("Cannot parse the template, please check the file", false, "error"); return;}
+        if (!steps.length) { tip("Cannot parse the template, please check the file", false, "error"); return; }
         body.innerHTML = "";
         for (const s of steps) {
           const step = s.split(" ");
-          if (step.length !== 5) {console.error("Cannot parse step, wrong arguments count", s); continue;}
+          if (step.length !== 5) { console.error("Cannot parse step, wrong arguments count", s); continue; }
           addStep(step[0], step[1], step[2], step[3], step[4]);
         }
       }
-      
+
       fileReader.readAsText(fileToLoad, "UTF-8");
     }
   }
@@ -808,7 +812,7 @@ function editHeightmap() {
 
     $("#imageConverter").dialog({
       title: "Image Converter", minHeight: "auto", width: "22.5em", resizable: false,
-      position: {my: "right top", at: "right-10 top+10", of: "svg"}
+      position: { my: "right top", at: "right-10 top+10", of: "svg" }
     }).on('dialogclose', closeImageConverter);
 
     // create canvas for image
@@ -818,7 +822,7 @@ function editHeightmap() {
     canvas.height = graphHeight;
     document.body.insertBefore(canvas, optionsContainer);
     setOverlayOpacity(0);
-    
+
     document.getElementById("convertImageLoad").classList.add("glow"); // add glow effect
     tip('Image Converter is opened. Upload the image and assign the colors to desired heights', true); // main tip
 
@@ -829,7 +833,7 @@ function editHeightmap() {
     void function createColorPallete() {
       const container = d3.select("#colorScheme");
       container.selectAll("div").data(d3.range(101)).enter().append("div").attr("data-color", i => i)
-        .style("background-color", i => color(1-i/100))
+        .style("background-color", i => color(1 - i / 100))
         .style("width", i => i < 20 || i > 70 ? "3px" : "1px")
         .on("touchmove mousemove", showPalleteHeight).on("click", assignHeight);
     }()
@@ -842,8 +846,8 @@ function editHeightmap() {
     document.getElementById("convertColorsPlus").addEventListener("click", () => changeConvertColorsNumber(1));
     document.getElementById("convertColorsMinus").addEventListener("click", () => changeConvertColorsNumber(-1));
     document.getElementById("convertComplete").addEventListener("click", () => $("#imageConverter").dialog("close"));
-    document.getElementById("convertOverlay").addEventListener("input", function() {setOverlayOpacity(this.value)});
-    document.getElementById("convertOverlayNumber").addEventListener("input", function() {setOverlayOpacity(this.value)});
+    document.getElementById("convertOverlay").addEventListener("input", function () { setOverlayOpacity(this.value) });
+    document.getElementById("convertOverlayNumber").addEventListener("input", function () { setOverlayOpacity(this.value) });
 
     function showPalleteHeight() {
       colorsSelectValue.innerHTML = this.getAttribute("data-color");
@@ -858,7 +862,7 @@ function editHeightmap() {
       const reader = new FileReader();
       const img = new Image;
 
-      img.onload = function() {
+      img.onload = function () {
         const ctx = document.getElementById("canvas").getContext("2d");
         ctx.drawImage(img, 0, 0, graphWidth, graphHeight);
         heightsFromImage(+convertColors.value);
@@ -866,7 +870,7 @@ function editHeightmap() {
         convertImageLoad.classList.remove("glow");
       };
 
-      reader.onloadend = function() {img.src = reader.result;};
+      reader.onloadend = function () { img.src = reader.result; };
       reader.readAsDataURL(file);
     }
 
@@ -881,10 +885,10 @@ function editHeightmap() {
       colorsUnassigned.style.display = "block";
       colorsAssigned.style.display = "none";
 
-      const gridColors = grid.points.map(function(p) {
+      const gridColors = grid.points.map(function (p) {
         const x = Math.floor(p[0]), y = Math.floor(p[1]);
         const i = (x + y * graphWidth) * 4;
-        const r = data[i], g = data[i+1], b = data[i+2];
+        const r = data[i], g = data[i + 1], b = data[i + 2];
         return [r, g, b];
       });
 
@@ -892,7 +896,7 @@ function editHeightmap() {
       const usedColors = new Set();
 
       terrs.selectAll("polygon").data(grid.cells.i).join("polygon").attr("points", d => getGridPolygon(d))
-        .attr("id", d => "cell"+d).attr("fill", d => {
+        .attr("id", d => "cell" + d).attr("fill", d => {
           const clr = `rgb(${cmap.nearest(gridColors[d])})`;
           usedColors.add(clr);
           return clr;
@@ -937,15 +941,15 @@ function editHeightmap() {
 
     function assignHeight() {
       const height = +this.getAttribute("data-color");
-      const rgb = color(1 - height/100);
+      const rgb = color(1 - height / 100);
 
-      const selectedColor = imageConverter.querySelector("div.selectedColor");      
+      const selectedColor = imageConverter.querySelector("div.selectedColor");
       selectedColor.style.backgroundColor = rgb;
       selectedColor.setAttribute("data-color", rgb);
       selectedColor.setAttribute("data-height", height);
 
-      terrs.selectAll(".selectedCell").each(function() {
-        this.setAttribute("fill", rgb); 
+      terrs.selectAll(".selectedCell").each(function () {
+        this.setAttribute("fill", rgb);
         this.setAttribute("data-height", height);
       });
 
@@ -959,26 +963,26 @@ function editHeightmap() {
     // auto assign color based on luminosity or hue
     function autoAssing(type) {
       const unassigned = colorsUnassigned.querySelectorAll("div");
-      if (!unassigned.length) {tip("No unassigned colors. Please load an image and click the button again", false, "error"); return;}
+      if (!unassigned.length) { tip("No unassigned colors. Please load an image and click the button again", false, "error"); return; }
 
-      unassigned.forEach(function(el) {
+      unassigned.forEach(function (el) {
         const colorFrom = el.getAttribute("data-color");
         const lab = d3.lab(colorFrom);
         const normalized = type === "hue" ? rn(normalize(lab.b + lab.a / 2, -50, 200), 2) : rn(normalize(lab.l, 0, 100), 2);
         const colorTo = color(1 - normalized);
         const heightTo = normalized * 100;
-        
+
         terrs.selectAll("polygon[fill='" + colorFrom + "']").attr("fill", colorTo).attr("data-height", heightTo);
         el.style.backgroundColor = colorTo;
         el.setAttribute("data-color", colorTo);
         el.setAttribute("data-height", heightTo);
-        colorsAssigned.appendChild(el);        
+        colorsAssigned.appendChild(el);
       });
-      
+
       colorsAssigned.style.display = "block";
-      colorsUnassigned.style.display = "none";   
+      colorsUnassigned.style.display = "none";
     }
-    
+
     function changeConvertColorsNumber(change) {
       const number = Math.max(Math.min(+convertColors.value + change, 255), 3);
       convertColors.value = number;
@@ -1001,7 +1005,7 @@ function editHeightmap() {
       viewbox.style("cursor", "default").on(".drag", null);
       tip('Heightmap edit mode is active. Click on "Exit Customization" to finalize the heightmap', true);
 
-      terrs.selectAll("polygon").each(function() {
+      terrs.selectAll("polygon").each(function () {
         const height = +this.getAttribute("data-height") || 0;
         const i = +this.id.slice(4);
         grid.cells.h[i] = height;
@@ -1009,8 +1013,8 @@ function editHeightmap() {
 
       terrs.selectAll("polygon").remove();
       updateHeightmap();
-    }    
-    
+    }
+
   }
 
   function toggleHeightmapPreview() {
@@ -1034,10 +1038,10 @@ function editHeightmap() {
     grid.cells.h.forEach((height, i) => {
       let h = height < 20 ? Math.max(height / 1.5, 0) : height;
       const v = h / 100 * 255;
-      imageData.data[i*4] = v;
-      imageData.data[i*4 + 1] = v;
-      imageData.data[i*4 + 2] = v;
-      imageData.data[i*4 + 3] = 255;
+      imageData.data[i * 4] = v;
+      imageData.data[i * 4 + 1] = v;
+      imageData.data[i * 4 + 2] = v;
+      imageData.data[i * 4 + 3] = 255;
     });
 
     ctx.putImageData(imageData, 0, 0);
@@ -1047,7 +1051,7 @@ function editHeightmap() {
     if ($("#perspectivePanel").is(":visible")) return;
     $("#perspectivePanel").dialog({
       title: "Perspective View", minHeight: "auto", width: 510, height: 200,
-      position: {my: "center center", at: "center center", of: "svg"}
+      position: { my: "center center", at: "center center", of: "svg" }
     });
 
     drawPerspective();
@@ -1086,7 +1090,7 @@ function editHeightmap() {
         pContext.moveTo(...transformPt(pt1));
         pContext.lineTo(...transformPt(pt2));
         let clr = "rgb(81, 103, 169)"; // water
-        if (avHeight !== 0) {clr = color(1 - avHeight - 0.2);}
+        if (avHeight !== 0) { clr = color(1 - avHeight - 0.2); }
         pContext.strokeStyle = clr;
         pContext.stroke();
       }
@@ -1098,13 +1102,13 @@ function editHeightmap() {
 
   function transformPt(pt) {
     const width = 320, maxHeight = 0.2;
-    var [x, y] = projectIsometric(pt[0],pt[1]);
+    var [x, y] = projectIsometric(pt[0], pt[1]);
     return [x + width / 2 + 10, y + 10 - pt[2] * maxHeight];
   }
 
   function projectIsometric(x, y) {
     const scale = 1, yProj = 4;
     return [(x - y) * scale, (x + y) / yProj * scale];
-  }  
+  }
 
 }

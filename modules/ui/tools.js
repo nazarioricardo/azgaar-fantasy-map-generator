@@ -1,35 +1,35 @@
 // module to control the Tools options (click to edit, to re-geenerate, tp add)
 "use strict";
 
-toolsContent.addEventListener("click", function(event) {
-  if (customization) {tip("Please exit the customization mode first", false, "warning"); return;}
+toolsContent.addEventListener("click", function (event) {
+  if (customization) { tip("Please exit the customization mode first", false, "warning"); return; }
   if (event.target.tagName !== "BUTTON") return;
   const button = event.target.id;
 
   // Click to open Editor buttons
   if (button === "editHeightmapButton") editHeightmap(); else
-  if (button === "editBiomesButton") editBiomes(); else
-  if (button === "editStatesButton") editStates(); else
-  if (button === "editCulturesButton") editCultures(); else
-  if (button === "editNamesBaseButton") editNamesbase(); else
-  if (button === "editBurgsButton") editBurgs(); else
-  if (button === "editUnitsButton") editUnits();
+    if (button === "editBiomesButton") editBiomes(); else
+      if (button === "editStatesButton") editStates(); else
+        if (button === "editCulturesButton") editCultures(); else
+          if (button === "editNamesBaseButton") editNamesbase(); else
+            if (button === "editBurgsButton") editBurgs(); else
+              if (button === "editUnitsButton") editUnits();
 
   // Click to Regenerate buttons
-  if (button === "regenerateStateLabels") {BurgsAndStates.drawStateLabels(); if (!layerIsOn("toggleLabels")) toggleLabels();} else 
-  if (button === "regenerateReliefIcons") {ReliefIcons(); if (!layerIsOn("toggleRelief")) toggleRelief();} else 
-  if (button === "regenerateRoutes") {Routes.regenerate(); if (!layerIsOn("toggleRoutes")) toggleRoutes();} else 
-  if (button === "regenerateRivers") regenerateRivers(); else
-  if (button === "regeneratePopulation") recalculatePopulation(); else
-  if (button === "regenerateBurgs") regenerateBurgs(); else
-  if (button === "regenerateStates") regenerateStates();
+  if (button === "regenerateStateLabels") { BurgsAndStates.drawStateLabels(); if (!layerIsOn("toggleLabels")) toggleLabels(); } else
+    if (button === "regenerateReliefIcons") { ReliefIcons(); if (!layerIsOn("toggleRelief")) toggleRelief(); } else
+      if (button === "regenerateRoutes") { Routes.regenerate(); if (!layerIsOn("toggleRoutes")) toggleRoutes(); } else
+        if (button === "regenerateRivers") regenerateRivers(); else
+          if (button === "regeneratePopulation") recalculatePopulation(); else
+            if (button === "regenerateBurgs") regenerateBurgs(); else
+              if (button === "regenerateStates") regenerateStates();
 
   // Click to Add buttons
   if (button === "addLabel") toggleAddLabel(); else
-  if (button === "addBurgTool") toggleAddBurg(); else
-  if (button === "addRiver") toggleAddRiver(); else
-  if (button === "addRoute") toggleAddRoute(); else
-  if (button === "addMarker") toggleAddMarker();
+    if (button === "addBurgTool") toggleAddBurg(); else
+      if (button === "addRiver") toggleAddRiver(); else
+        if (button === "addRoute") toggleAddRoute(); else
+          if (button === "addMarker") toggleAddMarker();
 });
 
 function regenerateRivers() {
@@ -64,7 +64,7 @@ function regenerateBurgs() {
   const burgsCount = manorsInput.value == 1000 ? rn(sorted.length / 10 / densityInput.value ** .8) + states.length : +manorsInput.value + states.length;
   const spacing = (graphWidth + graphHeight) * 9 / burgsCount; // base min distance between towns
 
-  for (let i=0; i < sorted.length && burgs.length < burgsCount; i++) {
+  for (let i = 0; i < sorted.length && burgs.length < burgsCount; i++) {
     const id = burgs.length;
     const cell = sorted[i];
     const x = cells.p[cell][0], y = cells.p[cell][1];
@@ -74,11 +74,11 @@ function regenerateBurgs() {
 
     const state = cells.state[cell];
     const capital = !states[state].capital; // if state doesn't have capital, make this burg a capital
-    if (capital) {states[state].capital = id; states[state].cell = cell;}
+    if (capital) { states[state].capital = id; states[state].cell = cell; }
 
     const culture = cells.culture[cell];
     const name = Names.getCulture(culture);
-    burgs.push({cell, x, y, state, i: id, culture, name, capital, feature: cells.f[cell]});
+    burgs.push({ cell, x, y, state, i: id, culture, name, capital, feature: cells.f[cell] });
     burgsTree.add([x, y]);
     cells.burg[cell] = id;
   }
@@ -117,7 +117,7 @@ function regenerateStates() {
     let newCapital = 0, x = 0, y = 0;
 
     while (!newCapital) {
-      newCapital = burgs[biased(1, burgs.length-1, 3)];
+      newCapital = burgs[biased(1, burgs.length - 1, 3)];
       x = newCapital.x, y = newCapital.y;
       if (capitalsTree.find(x, y, spacing) !== undefined) {
         spacing -= 1;
@@ -131,7 +131,7 @@ function regenerateStates() {
     s.center = newCapital.cell;
     s.culture = newCapital.culture;
     s.expansionism = rn(Math.random() * powerInput.value / 2 + 1, 1);
-    const basename = newCapital.name.length < 9 && newCapital.cell%5 === 0 ? newCapital.name : Names.getCulture(s.culture, 3, 6, "", 0);
+    const basename = newCapital.name.length < 9 && newCapital.cell % 5 === 0 ? newCapital.name : Names.getCulture(s.culture, 3, 6, "", 0);
     s.name = Names.getState(basename, s.culture);
     moveBurgToGroup(newCapital.i, "cities");
 
@@ -154,7 +154,7 @@ function unpressClickToAddButton() {
 
 function toggleAddLabel() {
   const pressed = document.getElementById("addLabel").classList.contains("pressed");
-  if (pressed) {unpressClickToAddButton(); return;}
+  if (pressed) { unpressClickToAddButton(); return; }
 
   addFeature.querySelectorAll("button.pressed").forEach(b => b.classList.remove("pressed"));
   addLabel.classList.add('pressed');
@@ -165,6 +165,7 @@ function toggleAddLabel() {
 }
 
 function addLabelOnClick() {
+  console.log('addLabelOnClick')
   const point = d3.mouse(this);
 
   // get culture in clicked point to generate a name
@@ -180,11 +181,11 @@ function addLabelOnClick() {
     .attr("font-size", 18).attr("data-size", 18).attr("filter", null);
 
   group.append("text").attr("id", id)
-    .append("textPath").attr("xlink:href", "#textPath_"+id).text(name)
+    .append("textPath").attr("xlink:href", "#textPath_" + id).text(name)
     .attr("startOffset", "50%").attr("font-size", "100%");
 
-  defs.select("#textPaths").append("path").attr("id", "textPath_"+id)
-    .attr("d", `M${point[0]-60},${point[1]} h${120}`);
+  defs.select("#textPaths").append("path").attr("id", "textPath_" + id)
+    .attr("d", `M${point[0] - 60},${point[1]} h${120}`);
 
   if (d3.event.shiftKey === false) unpressClickToAddButton();
 }
@@ -198,7 +199,7 @@ function toggleAddBurg() {
 
 function toggleAddRiver() {
   const pressed = document.getElementById("addRiver").classList.contains("pressed");
-  if (pressed) {unpressClickToAddButton(); return;}
+  if (pressed) { unpressClickToAddButton(); return; }
 
   addFeature.querySelectorAll("button.pressed").forEach(b => b.classList.remove("pressed"));
   addRiver.classList.add('pressed');
@@ -209,6 +210,7 @@ function toggleAddRiver() {
 }
 
 function addRiverOnClick() {
+  console.log('addRiverOnClick')
   const cells = pack.cells;
   const point = d3.mouse(this);
   let i = findCell(point[0], point[1]);
@@ -223,12 +225,12 @@ function addRiverOnClick() {
   while (i) {
     cells.r[i] = river;
     const x = cells.p[i][0], y = cells.p[i][1];
-    dataRiver.push({x, y, cell:i});
+    dataRiver.push({ x, y, cell: i });
 
     let min = cells.c[i][d3.scan(cells.c[i], (a, b) => cells.h[a] - cells.h[b])]; // downhill cell
 
     if (cells.h[i] <= cells.h[min]) {
-      if (depressed) {tip("The heightmap is too depressed, please try again", false, "error"); return;}
+      if (depressed) { tip("The heightmap is too depressed, please try again", false, "error"); return; }
       depressed = Rivers.resolveDepressions();
       min = cells.c[i][d3.scan(cells.c[i], (a, b) => cells.h[a] - cells.h[b])];
     }
@@ -238,7 +240,7 @@ function addRiverOnClick() {
     if (cells.h[min] < 20) {
       const px = (x + tx) / 2;
       const py = (y + ty) / 2;
-      dataRiver.push({x: px, y: py, cell:i});
+      dataRiver.push({ x: px, y: py, cell: i });
       break;
     }
 
@@ -254,12 +256,12 @@ function addRiverOnClick() {
     // new river is not perspective
     if (dataRiver.length <= riverCellsUpper.length) {
       cells.conf[min] += cells.fl[i];
-      dataRiver.push({x: tx, y: ty, cell: min});
+      dataRiver.push({ x: tx, y: ty, cell: min });
       break;
     }
 
     // new river is more perspective
-    rivers.select("#river"+r).remove();
+    rivers.select("#river" + r).remove();
     riverCellsUpper.forEach(i => cells.r[i] = 0);
     if (riverCellsUpper.length > 1) {
       // redraw upper part of the old river
@@ -274,17 +276,18 @@ function addRiverOnClick() {
   const width = Math.random() * .5 + .9;
   const increment = Math.random() * .4 + .8;
   const d = Rivers.getPath(points, width, increment);
-  rivers.append("path").attr("d", d).attr("id", "river"+river).attr("data-width", width).attr("data-increment", increment);
+  rivers.append("path").attr("d", d).attr("id", "river" + river).attr("data-width", width).attr("data-increment", increment);
 
   if (depressed) {
     if (layerIsOn("toggleHeight")) drawHeightmap();
     alertMessage.innerHTML = `<p>Heightmap is depressed and the system had to change the heightmap to allow water flux.</p>
     Would you like to <i>keep</i> the changes or <i>restore</i> the initial heightmap?`;
 
-    $("#alert").dialog({resizable: false, title: "Heightmap is changed", width: 300, modal: true,
+    $("#alert").dialog({
+      resizable: false, title: "Heightmap is changed", width: 300, modal: true,
       buttons: {
-        Keep: function() {$(this).dialog("close");},
-        Restore: function() {
+        Keep: function () { $(this).dialog("close"); },
+        Restore: function () {
           $(this).dialog("close");
           pack.cells.h = new Uint8Array(heights);
           if (layerIsOn("toggleHeight")) drawHeightmap();
@@ -298,7 +301,7 @@ function addRiverOnClick() {
 
 function toggleAddRoute() {
   const pressed = document.getElementById("addRoute").classList.contains("pressed");
-  if (pressed) {unpressClickToAddButton(); return;}
+  if (pressed) { unpressClickToAddButton(); return; }
 
   addFeature.querySelectorAll("button.pressed").forEach(b => b.classList.remove("pressed"));
   addRoute.classList.add('pressed');
@@ -318,7 +321,7 @@ function addRouteOnClick() {
 
 function toggleAddMarker() {
   const pressed = document.getElementById("addMarker").classList.contains("pressed");
-  if (pressed) {unpressClickToAddButton(); return;}
+  if (pressed) { unpressClickToAddButton(); return; }
 
   addFeature.querySelectorAll("button.pressed").forEach(b => b.classList.remove("pressed"));
   addMarker.classList.add('pressed');
@@ -334,8 +337,8 @@ function addMarkerOnClick() {
   const id = getNextId("markerElement");
 
   const selected = markerSelectGroup.value;
-  const valid = selected && d3.select("#defs-markers").select("#"+selected).size();
-  const symbol = valid ? "#"+selected : "#marker0";
+  const valid = selected && d3.select("#defs-markers").select("#" + selected).size();
+  const symbol = valid ? "#" + selected : "#marker0";
   const added = markers.select("[data-id='" + symbol + "']").size();
   let desired = valid && added ? markers.select("[data-id='" + symbol + "']").attr("data-size") : 1;
   if (isNaN(desired)) desired = 1;

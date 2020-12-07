@@ -13,7 +13,7 @@ function editReliefIcon() {
 
   $("#reliefEditor").dialog({
     title: "Edit Relief Icons", resizable: false,
-    position: {my: "center top+40", at: "top", of: d3.event, collision: "fit"},
+    position: { my: "center top+40", at: "top", of: d3.event, collision: "fit" },
     close: closeReliefEditor
   });
 
@@ -38,23 +38,23 @@ function editReliefIcon() {
     const dx = +this.getAttribute("x") - d3.event.x;
     const dy = +this.getAttribute("y") - d3.event.y;
 
-    d3.event.on("drag", function() {
+    d3.event.on("drag", function () {
       const x = d3.event.x, y = d3.event.y;
-      this.setAttribute("x", dx+x);
-      this.setAttribute("y", dy+y);
+      this.setAttribute("x", dx + x);
+      this.setAttribute("y", dy + y);
     });
   }
 
   function restoreEditMode() {
     if (!reliefTools.querySelector("button.pressed")) enterIndividualMode(); else
-    if (reliefBulkAdd.classList.contains("pressed")) enterBulkAddMode(); else
-    if (reliefBulkRemove.classList.contains("pressed")) enterBulkRemoveMode();
+      if (reliefBulkAdd.classList.contains("pressed")) enterBulkAddMode(); else
+        if (reliefBulkRemove.classList.contains("pressed")) enterBulkRemoveMode();
   }
 
   function updateReliefIconSelected() {
     const type = elSelected.attr("data-type");
     reliefIconsDiv.querySelectorAll("svg.pressed").forEach(b => b.classList.remove("pressed"));
-    reliefIconsDiv.querySelector("svg[data-type='"+type+"']").classList.add("pressed");
+    reliefIconsDiv.querySelector("svg[data-type='" + type + "']").classList.add("pressed");
   }
 
   function updateReliefSizeInput() {
@@ -104,7 +104,7 @@ function editReliefIcon() {
 
   function dragToAdd() {
     const pressed = reliefIconsDiv.querySelector("svg.pressed");
-    if (!pressed) {tip("Please select an icon", false, error); return;}
+    if (!pressed) { tip("Please select an icon", false, error); return; }
 
     const type = pressed.dataset.type;
     const r = +reliefRadiusNumber.value;
@@ -114,7 +114,7 @@ function editReliefIcon() {
     // build a quadtree
     const tree = d3.quadtree();
     const positions = [];
-    terrain.selectAll("use").each(function() {
+    terrain.selectAll("use").each(function () {
       const x = +this.getAttribute("x") + this.getAttribute("width") / 2;
       const y = +this.getAttribute("y") + this.getAttribute("height") / 2;
       tree.add([x, y, x]);
@@ -122,31 +122,32 @@ function editReliefIcon() {
       positions.push(box.y + box.height);
     });
 
-    d3.event.on("drag", function() {
+    d3.event.on("drag", function () {
       const p = d3.mouse(this);
       moveCircle(p[0], p[1], r);
 
-      d3.range(Math.ceil(r/10)).forEach(function() {
+      d3.range(Math.ceil(r / 10)).forEach(function () {
         const a = Math.PI * 2 * Math.random();
         const rad = r * Math.random();
         const cx = p[0] + rad * Math.cos(a);
         const cy = p[1] + rad * Math.sin(a);
 
         if (tree.find(cx, cy, spacing)) return; // too close to existing icon
+        console.log('if pack.cells.h[findCell(cx, cy)] < 20')
         if (pack.cells.h[findCell(cx, cy)] < 20) return; // on water cell
 
         const h = rn(size / 2 * (Math.random() * .4 + .8), 2);
-        const x = rn(cx-h, 2);
-        const y = rn(cy-h, 2);
+        const x = rn(cx - h, 2);
+        const y = rn(cy - h, 2);
         const z = y + h * 2;
 
         let nth = 1;
-        while (positions[nth] && z > positions[nth]) {nth++;}
+        while (positions[nth] && z > positions[nth]) { nth++; }
 
         tree.add([cx, cy]);
         positions.push(z);
-        terrain.insert("use", ":nth-child("+nth+")").attr("xlink:href", type).attr("data-type", type)
-          .attr("x", x).attr("y", y).attr("data-size", h*2).attr("width", h*2).attr("height", h*2);
+        terrain.insert("use", ":nth-child(" + nth + ")").attr("xlink:href", type).attr("data-type", type)
+          .attr("x", x).attr("y", y).attr("data-size", h * 2).attr("width", h * 2).attr("height", h * 2);
       });
 
     });
@@ -167,19 +168,19 @@ function editReliefIcon() {
 
   function dragToRemove() {
     const pressed = reliefIconsDiv.querySelector("svg.pressed");
-    if (!pressed) {tip("Please select an icon", false, error); return;}
+    if (!pressed) { tip("Please select an icon", false, error); return; }
 
     const r = +reliefRadiusNumber.value;
     const type = pressed.dataset.type;
-    const icons = type ? terrain.selectAll("use[data-type='"+type+"']") : terrain.selectAll("use");
+    const icons = type ? terrain.selectAll("use[data-type='" + type + "']") : terrain.selectAll("use");
     const tree = d3.quadtree();
-    icons.each(function() {
+    icons.each(function () {
       const x = +this.getAttribute("x") + this.getAttribute("width") / 2;
       const y = +this.getAttribute("y") + this.getAttribute("height") / 2;
       tree.add([x, y, this]);
     });
 
-    d3.event.on("drag", function() {
+    d3.event.on("drag", function () {
       const p = d3.mouse(this);
       moveCircle(p[0], p[1], r);
       tree.findAll(p[0], p[1], r).forEach(f => f[2].remove());
@@ -193,7 +194,7 @@ function editReliefIcon() {
     const shift = (size - +elSelected.attr("width")) / 2;
     elSelected.attr("width", size).attr("height", size).attr("data-size", size);
     const x = +elSelected.attr("x"), y = +elSelected.attr("y");
-    elSelected.attr("x", x-shift).attr("y", y-shift);
+    elSelected.attr("x", x - shift).attr("y", y - shift);
   }
 
   function changeIcon() {
@@ -213,7 +214,7 @@ function editReliefIcon() {
     const copy = elSelected.node().cloneNode(true);
 
     let x = +elSelected.attr("x") - 3, y = +elSelected.attr("y") - 3;
-    while (parent.querySelector("[x='"+x+"']","[x='"+y+"']")) {
+    while (parent.querySelector("[x='" + x + "']", "[x='" + y + "']")) {
       x -= 3; y -= 3;
     }
 
@@ -224,14 +225,15 @@ function editReliefIcon() {
 
   function removeIcon() {
     alertMessage.innerHTML = `Are you sure you want to remove the icon?`;
-    $("#alert").dialog({resizable: false, title: "Remove relief icon",
+    $("#alert").dialog({
+      resizable: false, title: "Remove relief icon",
       buttons: {
-        Remove: function() {
+        Remove: function () {
           $(this).dialog("close");
           elSelected.remove();
           $("#reliefEditor").dialog("close");
         },
-        Cancel: function() {$(this).dialog("close");}
+        Cancel: function () { $(this).dialog("close"); }
       }
     });
   }

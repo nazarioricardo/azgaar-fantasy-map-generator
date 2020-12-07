@@ -5,7 +5,7 @@
 window.onbeforeunload = () => "Are you sure you want to navigate away?";
 
 // fit full-screen map if window is resized
-$(window).resize(function(e) {
+$(window).resize(function (e) {
   mapWidthInput.value = window.innerWidth;
   mapHeightInput.value = window.innerHeight;
   changeMapSize();
@@ -38,11 +38,12 @@ function clearMainTip() {
 
 function showDataTip(e) {
   if (!e.target) return;
-  if (e.target.dataset.tip) {tip(e.target.dataset.tip); return;};
+  if (e.target.dataset.tip) { tip(e.target.dataset.tip); return; };
   if (e.target.parentNode.dataset.tip) tip(e.target.parentNode.dataset.tip);
 }
 
 function moved() {
+  console.log('moved')
   const point = d3.mouse(this);
   const i = findCell(point[0], point[1]); // pack ell id
   if (i === undefined) return;
@@ -56,7 +57,7 @@ function moved() {
 function showLegend(e, i) {
   let id = e.target.id || e.target.parentNode.id;
   if (e.target.parentNode.parentNode.id === "burgLabels") id = "burg" + e.target.dataset.id; else
-  if (e.target.parentNode.parentNode.id === "burgIcons") id = "burg" + e.target.dataset.id;
+    if (e.target.parentNode.parentNode.id === "burgIcons") id = "burg" + e.target.dataset.id;
 
   const note = notes.find(note => note.id === id);
   if (note !== undefined && note.legend !== "") {
@@ -81,31 +82,31 @@ function showMapTooltip(e, i, g) {
   const land = pack.cells.h[i] >= 20;
 
   // specific elements
-  if (group === "rivers") {tip("Click to edit the River"); return;}
-  if (group === "routes") {tip("Click to edit the Route"); return;}
-  if (group === "terrain") {tip("Click to edit the Relief Icon"); return;}
-  if (subgroup === "burgLabels" || subgroup === "burgIcons") {tip("Click to open Burg Editor"); return;}
-  if (group === "labels") {tip("Click to edit the Label"); return;}
-  if (group === "markers") {tip("Click to edit the Marker"); return;}
+  if (group === "rivers") { tip("Click to edit the River"); return; }
+  if (group === "routes") { tip("Click to edit the Route"); return; }
+  if (group === "terrain") { tip("Click to edit the Relief Icon"); return; }
+  if (subgroup === "burgLabels" || subgroup === "burgIcons") { tip("Click to open Burg Editor"); return; }
+  if (group === "labels") { tip("Click to edit the Label"); return; }
+  if (group === "markers") { tip("Click to edit the Marker"); return; }
   if (group === "ruler") {
-    if (tag === "rect") {tip("Drag to split the ruler into 2 parts"); return;}
-    if (tag === "circle") {tip("Drag to adjust the measurer"); return;}
-    if (tag === "path" || tag === "line") {tip("Drag to move the measurer"); return;}
-    if (tag === "text") {tip("Click to remove the measurer"); return;}
+    if (tag === "rect") { tip("Drag to split the ruler into 2 parts"); return; }
+    if (tag === "circle") { tip("Drag to adjust the measurer"); return; }
+    if (tag === "path" || tag === "line") { tip("Drag to move the measurer"); return; }
+    if (tag === "text") { tip("Click to remove the measurer"); return; }
   }
-  if (subgroup === "burgIcons") {tip("Click to edit the Burg"); return;}
-  if (subgroup === "burgLabels") {tip("Click to edit the Burg"); return;}
-  if (subgroup === "freshwater" && !land) {tip("Freshwater lake"); return;}
-  if (subgroup === "salt" && !land) {tip("Salt lake"); return;}
+  if (subgroup === "burgIcons") { tip("Click to edit the Burg"); return; }
+  if (subgroup === "burgLabels") { tip("Click to edit the Burg"); return; }
+  if (subgroup === "freshwater" && !land) { tip("Freshwater lake"); return; }
+  if (subgroup === "salt" && !land) { tip("Salt lake"); return; }
 
   // covering elements
-  if (layerIsOn("togglePrec") && land) tip("Annual Precipitation: "+ getFriendlyPrecipitation(i)); else
-  if (layerIsOn("togglePopulation")) tip("Population: "+ getFriendlyPopulation(i)); else
-  if (layerIsOn("toggleTemp")) tip("Temperature: " + convertTemperature(grid.cells.temp[g])); else
-  if (layerIsOn("toggleBiomes") && pack.cells.biome[i]) tip("Biome: " + biomesData.name[pack.cells.biome[i]]); else
-  if (layerIsOn("toggleStates") && pack.cells.state[i]) tip("State: " + pack.states[pack.cells.state[i]].name); else
-  if (layerIsOn("toggleCultures") && pack.cells.culture[i]) tip("Culture: " + pack.cultures[pack.cells.culture[i]].name); else
-  if (layerIsOn("toggleHeight")) tip("Height: " + getFriendlyHeight(pack.cells.h[i]));
+  if (layerIsOn("togglePrec") && land) tip("Annual Precipitation: " + getFriendlyPrecipitation(i)); else
+    if (layerIsOn("togglePopulation")) tip("Population: " + getFriendlyPopulation(i)); else
+      if (layerIsOn("toggleTemp")) tip("Temperature: " + convertTemperature(grid.cells.temp[g])); else
+        if (layerIsOn("toggleBiomes") && pack.cells.biome[i]) tip("Biome: " + biomesData.name[pack.cells.biome[i]]); else
+          if (layerIsOn("toggleStates") && pack.cells.state[i]) tip("State: " + pack.states[pack.cells.state[i]].name); else
+            if (layerIsOn("toggleCultures") && pack.cells.culture[i]) tip("Culture: " + pack.cultures[pack.cells.culture[i]].name); else
+              if (layerIsOn("toggleHeight")) tip("Height: " + getFriendlyHeight(pack.cells.h[i]));
 }
 
 // get cell info on mouse move
@@ -158,19 +159,19 @@ function getFriendlyPrecipitation(i) {
 // get user-friendly (real-world) population value from map data
 function getFriendlyPopulation(i) {
   const rural = pack.cells.pop[i] * populationRate.value;
-  const urban = pack.cells.burg[i] ? pack.burgs[pack.cells.burg[i]].population * populationRate.value * urbanization.value : 0;  
-  return si(rural+urban);
+  const urban = pack.cells.burg[i] ? pack.burgs[pack.cells.burg[i]].population * populationRate.value * urbanization.value : 0;
+  return si(rural + urban);
 }
 
 // assign lock behavior  
-document.querySelectorAll("[data-locked]").forEach(function(e) {
-  e.addEventListener("mouseover", function(event) {
+document.querySelectorAll("[data-locked]").forEach(function (e) {
+  e.addEventListener("mouseover", function (event) {
     if (this.className === "icon-lock") tip("Click to unlock the option and allow it to be randomized on new map generation");
     else tip("Click to lock the option and always use the current value on new map generation");
     event.stopPropagation();
   });
-  
-  e.addEventListener("click", function(event) {
+
+  e.addEventListener("click", function (event) {
     const id = (this.id).slice(5);
     if (this.className === "icon-lock") unlock(id);
     else lock(id);
@@ -179,19 +180,19 @@ document.querySelectorAll("[data-locked]").forEach(function(e) {
 
 // lock option
 function lock(id) {
-  const input = document.querySelector("[data-stored='"+id+"']");
-  if (input) localStorage.setItem(id, input.value);  
+  const input = document.querySelector("[data-stored='" + id + "']");
+  if (input) localStorage.setItem(id, input.value);
   const el = document.getElementById("lock_" + id);
-  if(!el) return;
+  if (!el) return;
   el.dataset.locked = 1;
   el.className = "icon-lock";
 }
- 
+
 // unlock option
 function unlock(id) {
   localStorage.removeItem(id);
   const el = document.getElementById("lock_" + id);
-  if(!el) return;
+  if (!el) return;
   el.dataset.locked = 0;
   el.className = "icon-lock-open";
 }
@@ -203,13 +204,13 @@ function locked(id) {
 }
 
 // Hotkeys, see github.com/Azgaar/Fantasy-Map-Generator/wiki/Hotkeys
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", function (event) {
   const active = document.activeElement.tagName;
   if (active === "INPUT" || active === "SELECT" || active === "TEXTAREA") return; // don't trigger if user inputs a text 
   const key = event.keyCode, ctrl = event.ctrlKey, shift = event.shiftKey;
   if (key === 118) regenerateMap(); // "F7" for new map
-  else if (key === 27) {closeDialogs(); hideOptions();} // Escape to close all dialogs
-  else if (key === 9) {toggleOptions(event); event.preventDefault();} // Tab to toggle options
+  else if (key === 27) { closeDialogs(); hideOptions(); } // Escape to close all dialogs
+  else if (key === 9) { toggleOptions(event); event.preventDefault(); } // Tab to toggle options
   else if (ctrl && key === 80) saveAsImage("png"); // Ctrl + "P" to save as PNG
   else if (ctrl && key === 83) saveAsImage("svg"); // Ctrl + "S" to save as SVG
   else if (ctrl && key === 77) saveMap(); // Ctrl + "M" to save MAP file

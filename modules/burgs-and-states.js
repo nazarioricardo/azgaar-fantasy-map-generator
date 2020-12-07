@@ -1,10 +1,11 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    (global.BurgsAndStates = factory());
-}(this, (function () { 'use strict';
+      (global.BurgsAndStates = factory());
+}(this, (function () {
+  'use strict';
 
-  const generate = function() {
+  const generate = function () {
     console.time("generateBurgsAndStates");
     const cells = pack.cells, cultures = pack.cultures, n = cells.i.length;
 
@@ -18,7 +19,7 @@
     placeTowns();
     const townRoutes = Routes.getTrails();
     specifyBurgs();
-    
+
     const oceanRoutes = Routes.getSearoutes();
 
     expandStates();
@@ -41,7 +42,7 @@
           console.error(`There is no populated cells. Cannot generate states`);
           return burgs;
         } else {
-          console.error(`Not enought populated cells (${sorted.length}). Will generate only ${count} states`);      
+          console.error(`Not enought populated cells (${sorted.length}). Will generate only ${count} states`);
         }
       }
 
@@ -52,7 +53,7 @@
         const cell = sorted[i], x = cells.p[cell][0], y = cells.p[cell][1];
 
         if (burgsTree.find(x, y, spacing) === undefined) {
-          burgs.push({cell, x, y});
+          burgs.push({ cell, x, y });
           burgsTree.add([x, y]);
         }
 
@@ -71,31 +72,31 @@
     // For each capital create a state
     function createStates() {
       console.time('createStates');
-      const states = [{i:0, name: "Neutrals"}];
-      const colors = getColors(burgs.length-1);
+      const states = [{ i: 0, name: "Neutrals" }];
+      const colors = getColors(burgs.length - 1);
 
-      burgs.forEach(function(b, i) {
+      burgs.forEach(function (b, i) {
         if (!i) return; // skip first element
 
         // burgs data
         b.i = b.state = i;
         b.culture = cells.culture[b.cell];
-        const base = cultures[b.culture].base; 
-        const min = nameBases[base].min-1;
-        const max = Math.max(nameBases[base].max-2, min);
+        const base = cultures[b.culture].base;
+        const min = nameBases[base].min - 1;
+        const max = Math.max(nameBases[base].max - 2, min);
         b.name = Names.getCulture(b.culture, min, max, "", 0);
         b.feature = cells.f[b.cell];
         b.capital = true;
 
         // states data
         const expansionism = rn(Math.random() * powerInput.value / 2 + 1, 1);
-        const basename = b.name.length < 9 && b.cell%5 === 0 ? b.name : Names.getCulture(b.culture, min, 6, "", 0);
+        const basename = b.name.length < 9 && b.cell % 5 === 0 ? b.name : Names.getCulture(b.culture, min, 6, "", 0);
         const name = Names.getState(basename, b.culture);
         const type = cultures[b.culture].type;
-        states.push({i, color: colors[i-1], name, expansionism, capital: i, type, center: b.cell, culture: b.culture});
+        states.push({ i, color: colors[i - 1], name, expansionism, capital: i, type, center: b.cell, culture: b.culture });
         cells.burg[b.cell] = i;
       });
-      
+
       console.timeEnd('createStates');
       return states;
     }
@@ -119,26 +120,26 @@
         const culture = cells.culture[id];
         const name = Names.getCulture(culture);
         const feature = cells.f[id];
-        burgs.push({cell: id, x, y, state: 0, i: burg, culture, name, capital: false, feature});
+        burgs.push({ cell: id, x, y, state: 0, i: burg, culture, name, capital: false, feature });
         burgsTree.add([x, y]);
         cells.burg[id] = burg;
       }
 
-      if (burgs.length < burgsCount) console.error(`Cannot place all burgs. Requested ${burgsCount}, placed ${burgs.length-1}`);
+      if (burgs.length < burgsCount) console.error(`Cannot place all burgs. Requested ${burgsCount}, placed ${burgs.length - 1}`);
 
       //const min = d3.min(score.filter(s => s)), max = d3.max(score);
       //terrs.selectAll("polygon").data(sorted).enter().append("polygon").attr("points", d => getPackPolygon(d)).attr("fill", d => color(1 - normalize(score[d], min, max)));  
       //labels.selectAll("text").data(sorted).enter().append("text").attr("x", d => cells.p[d][0]).attr("y", d => cells.p[d][1]).text(d => score[d]).attr("font-size", 2);
 
-      burgs[0] = {name:undefined};
-      console.timeEnd('placeTowns'); 
+      burgs[0] = { name: undefined };
+      console.timeEnd('placeTowns');
     }
 
     console.timeEnd("generateBurgsAndStates");
   }
 
   // define burg coordinates and define details
-  const specifyBurgs = function() {
+  const specifyBurgs = function () {
     console.time("specifyBurgs");
     const cells = pack.cells, vertices = pack.vertices;
 
@@ -164,9 +165,9 @@
 
       // shift burgs on rivers semi-randomly and just a bit
       if (cells.r[i]) {
-        const shift = Math.min(cells.fl[i]/150, 1);
-        if (i%2) b.x = rn(b.x + shift, 2); else b.x = rn(b.x - shift, 2);
-        if (cells.r[i]%2) b.y = rn(b.y + shift, 2); else b.y = rn(b.y - shift, 2);
+        const shift = Math.min(cells.fl[i] / 150, 1);
+        if (i % 2) b.x = rn(b.x + shift, 2); else b.x = rn(b.x - shift, 2);
+        if (cells.r[i] % 2) b.y = rn(b.y + shift, 2); else b.y = rn(b.y - shift, 2);
       }
 
     }
@@ -183,7 +184,7 @@
     console.timeEnd("specifyBurgs");
   }
 
-  const drawBurgs = function() {
+  const drawBurgs = function () {
     console.time("drawBurgs");
 
     // remove old data
@@ -194,23 +195,23 @@
     // capitals
     const capitals = pack.burgs.filter(b => b.capital);
     const capitalIcons = burgIcons.select("#cities");
-    const capitalLabels = burgLabels.select("#cities");   
+    const capitalLabels = burgLabels.select("#cities");
     const capitalSize = capitalIcons.attr("size") || 1;
     const capitalAnchors = anchors.selectAll("#cities");
     const caSize = capitalAnchors.attr("size") || 2;
 
     capitalIcons.selectAll("circle").data(capitals).enter()
-      .append("circle").attr("id", d => "burg"+d.i).attr("data-id", d => d.i)
+      .append("circle").attr("id", d => "burg" + d.i).attr("data-id", d => d.i)
       .attr("cx", d => d.x).attr("cy", d => d.y).attr("r", capitalSize);
 
     capitalLabels.selectAll("text").data(capitals).enter()
-      .append("text").attr("id", d => "burgLabel"+d.i).attr("data-id", d => d.i)
+      .append("text").attr("id", d => "burgLabel" + d.i).attr("data-id", d => d.i)
       .attr("x", d => d.x).attr("y", d => d.y).attr("dy", `${capitalSize * -1.5}px`).text(d => d.name);
-      
+
     capitalAnchors.selectAll("use").data(capitals.filter(c => c.port)).enter()
       .append("use").attr("xlink:href", "#icon-anchor").attr("data-id", d => d.i)
       .attr("x", d => rn(d.x - caSize * .47, 2)).attr("y", d => rn(d.y - caSize * .47, 2))
-      .attr("width", caSize).attr("height", caSize); 
+      .attr("width", caSize).attr("height", caSize);
 
     // towns
     const towns = pack.burgs.filter(b => b.capital === false);
@@ -221,14 +222,14 @@
     const taSize = townsAnchors.attr("size") || 1;
 
     townIcons.selectAll("circle").data(towns).enter()
-      .append("circle").attr("id", d => "burg"+d.i).attr("data-id", d => d.i)
+      .append("circle").attr("id", d => "burg" + d.i).attr("data-id", d => d.i)
       .attr("cx", d => d.x).attr("cy", d => d.y).attr("r", townSize);
 
     townLabels.selectAll("text").data(towns).enter()
-      .append("text").attr("id", d => "burgLabel"+d.i).attr("data-id", d => d.i)
+      .append("text").attr("id", d => "burgLabel" + d.i).attr("data-id", d => d.i)
       .attr("x", d => d.x).attr("y", d => d.y).attr("dy", `${townSize * -1.5}px`).text(d => d.name);
 
-     townsAnchors.selectAll("use").data(towns.filter(c => c.port)).enter()
+    townsAnchors.selectAll("use").data(towns.filter(c => c.port)).enter()
       .append("use").attr("xlink:href", "#icon-anchor").attr("data-id", d => d.i)
       .attr("x", d => rn(d.x - taSize * .47, 2)).attr("y", d => rn(d.y - taSize * .47, 2))
       .attr("width", taSize).attr("height", taSize);
@@ -237,17 +238,17 @@
   }
 
   // growth algorithm to assign cells to states like we did for cultures
-  const expandStates = function() {
+  const expandStates = function () {
     console.time("expandStates");
     const cells = pack.cells, states = pack.states, cultures = pack.cultures, burgs = pack.burgs;
 
     cells.state = new Uint8Array(cells.i.length); // cell state
-    const queue = new PriorityQueue({comparator: (a, b) => a.p - b.p});
+    const queue = new PriorityQueue({ comparator: (a, b) => a.p - b.p });
     const cost = [];
-    states.filter(s => s.i && !s.removed).forEach(function(s) {
+    states.filter(s => s.i && !s.removed).forEach(function (s) {
       cells.state[burgs[s.capital].cell] = s.i;
       const b = cells.biome[cultures[s.culture].center]; // native biome
-      queue.queue({e:s.center, p:0, s:s.i, b}); 
+      queue.queue({ e: s.center, p: 0, s: s.i, b });
       cost[s.center] = 1;
     });
     const neutral = cells.i.length / 5000 * 2000 * neutralInput.value * statesNeutral.value; // limit cost for state growth
@@ -256,7 +257,7 @@
       const next = queue.dequeue(), n = next.e, p = next.p, s = next.s, b = next.b;
       const type = states[s].type;
 
-      cells.c[n].forEach(function(e) {
+      cells.c[n].forEach(function (e) {
         const biome = cells.biome[e];
         const cultureCost = states[s].culture === cells.culture[e] ? 10 : 100;
         const biomeCost = getBiomeCost(cells.road[e], b, biome, type);
@@ -273,14 +274,14 @@
             if (cells.burg[e]) burgs[cells.burg[e]].state = s;
           }
           cost[e] = totalCost;
-          queue.queue({e, p:totalCost, s, b});
+          queue.queue({ e, p: totalCost, s, b });
 
           //const points = [cells.p[n][0], cells.p[n][1], (cells.p[n][0]+cells.p[e][0])/2, (cells.p[n][1]+cells.p[e][1])/2, cells.p[e][0], cells.p[e][1]];
           //debug.append("text").attr("x", (cells.p[n][0]+cells.p[e][0])/2 - 1).attr("y", (cells.p[n][1]+cells.p[e][1])/2 - 1).text(rn(totalCost-p)).attr("font-size", .8);
           //debug.append("polyline").attr("points", points).attr("marker-mid", "url(#arrow)").attr("opacity", .6);
         }
       });
-      
+
     }
 
     //debug.selectAll(".text").data(cost).enter().append("text").attr("x", (d, e) => cells.p[e][0]-1).attr("y", (d, e) => cells.p[e][1]-1).text(d => d ? rn(d) : "").attr("font-size", 2);  
@@ -320,7 +321,7 @@
     console.timeEnd("expandStates");
   }
 
-  const normalizeStates = function() {
+  const normalizeStates = function () {
     console.time("normalizeStates");
     const cells = pack.cells;
     const burgs = pack.burgs;
@@ -340,7 +341,7 @@
   }
 
   // calculate and draw curved state labels
-  const drawStateLabels = function() {
+  const drawStateLabels = function () {
     console.time("drawStateLabels");
     const cells = pack.cells, features = pack.features, states = pack.states;
     const paths = []; // text paths
@@ -359,7 +360,7 @@
       const voronoi = Voronoi(delaunay, points, points.length);
       const c = voronoi.vertices;
       const chain = connectCenters(c, s.i);
-      const relaxed = chain.map(i => c.p[i]).filter((p, i) => i%8 === 0 || i+1 === chain.length);
+      const relaxed = chain.map(i => c.p[i]).filter((p, i) => i % 8 === 0 || i + 1 === chain.length);
       paths.push([s.i, relaxed]);
 
       // if (s.i == 13) debug.selectAll(".circle").data(points).enter().append("circle").attr("cx", d => d[0]).attr("cy", d => d[1]).attr("r", .5).attr("fill", "red");
@@ -369,53 +370,54 @@
 
       function getHull(start, state) {
         const queue = [start], hull = new Set();
-  
+
         while (queue.length) {
           const q = queue.pop();
           const nQ = cells.c[q].filter(c => cells.state[c] === state);
-          cells.c[q].forEach(function(c, d) {
+          cells.c[q].forEach(function (c, d) {
             if (features[cells.f[c]].type === "lake" && features[cells.f[c]].cells < 10) return; // ignore small lakes
-            if (cells.b[c]) {hull.add(cells.v[q][d]); return;}
-            if (cells.state[c] !== state) {hull.add(cells.v[q][d]); return;}
+            if (cells.b[c]) { hull.add(cells.v[q][d]); return; }
+            if (cells.state[c] !== state) { hull.add(cells.v[q][d]); return; }
             const nC = cells.c[c].filter(n => cells.state[n] === state);
             const intersected = intersect(nQ, nC).length
-            if (hull.size > 20 && !intersected) {hull.add(cells.v[q][d]); return;}
+            if (hull.size > 20 && !intersected) { hull.add(cells.v[q][d]); return; }
             if (used[c]) return;
             used[c] = 1;
             queue.push(c);
           });
         }
-  
+
         return hull;
       }
 
       function connectCenters(c, state) {
+        console.log('connectCenters')
         // check if vertex is inside the area
-        const inside = c.p.map(function(p) {
+        const inside = c.p.map(function (p) {
           if (p[0] <= 0 || p[1] <= 0 || p[0] >= graphWidth || p[1] >= graphHeight) return false; // out of the screen
           return used[findCell(p[0], p[1])];
         });
         //if (state == 13) debug.selectAll(".circle").data(c.p).enter().append("circle").attr("cx", d => d[0]).attr("cy", d => d[1]).attr("r", .5).attr("fill", (d, i) => inside[i] ? "green" : "blue");
-  
+
         const sorted = d3.range(c.p.length).filter(i => inside[i]).sort((a, b) => c.p[a][0] - c.p[b][0]);
         const left = sorted[0] || 0, right = sorted.pop() || 0;
 
         // connect leftmost and rightmost points with shortest path
-        const queue = new PriorityQueue({comparator: (a, b) => a.p - b.p});
+        const queue = new PriorityQueue({ comparator: (a, b) => a.p - b.p });
         const cost = [], from = [];
-        queue.queue({e: right, p: 0});
-  
+        queue.queue({ e: right, p: 0 });
+
         while (queue.length) {
           const next = queue.dequeue(), n = next.e, p = next.p;
           if (n === left) break;
-  
+
           for (const v of c.v[n]) {
             if (v === -1) continue;
             const totalCost = p + (inside[v] ? 1 : 100);
             if (from[v] || totalCost >= cost[v]) continue;
             cost[v] = totalCost;
             from[v] = n;
-            queue.queue({e: v, p: totalCost});
+            queue.queue({ e: v, p: totalCost });
           }
         }
 
@@ -430,29 +432,29 @@
       }
 
     }
-   
+
     void function drawLabels() {
       const g = labels.select("#states"), p = defs.select("#textPaths");
       g.selectAll("text").remove();
       p.selectAll("path[id*='stateLabel']").remove();
 
-      const data = paths.map(p => [round(lineGen(p[1])), "stateLabel"+p[0], states[p[0]].name, p[1]]);
-      p.selectAll(".path").data(data).enter().append("path").attr("d", d => d[0]).attr("id", d => "textPath_"+d[1]);
+      const data = paths.map(p => [round(lineGen(p[1])), "stateLabel" + p[0], states[p[0]].name, p[1]]);
+      p.selectAll(".path").data(data).enter().append("path").attr("d", d => d[0]).attr("id", d => "textPath_" + d[1]);
 
       g.selectAll("text").data(data).enter()
         .append("text").attr("id", d => d[1])
-        .append("textPath").attr("xlink:href", d => "#textPath_"+d[1])
+        .append("textPath").attr("xlink:href", d => "#textPath_" + d[1])
         .attr("startOffset", "50%").text(d => d[2]);
 
       // resize label based on its length 
-      g.selectAll("text").each(function(e) {
-        const textPath = document.getElementById("textPath_"+e[1])
+      g.selectAll("text").each(function (e) {
+        const textPath = document.getElementById("textPath_" + e[1])
         const pathLength = textPath.getTotalLength();
 
         // if area is too small to get a path and length is 0
         if (pathLength === 0) {
           const x = e[3][0][0], y = e[3][0][1];
-          textPath.setAttribute("d", `M${x-50},${y}h${100}`);
+          textPath.setAttribute("d", `M${x - 50},${y}h${100}`);
           this.firstChild.setAttribute("font-size", "60%");
           return;
         }
@@ -462,26 +464,26 @@
         copy.remove();
 
         const size = Math.max(Math.min(rn(pathLength / textLength * 60), 175), 60);
-        this.firstChild.setAttribute("font-size", size+"%");
+        this.firstChild.setAttribute("font-size", size + "%");
 
         // prolongate textPath to not trim labels
         if (pathLength < 100) {
           const mod = 25 / pathLength;
           const points = e[3];
-          const f = points[0], l = points[points.length-1];
+          const f = points[0], l = points[points.length - 1];
           const dx = l[0] - f[0], dy = l[1] - f[1];
           points[0] = [rn(f[0] - dx * mod), rn(f[1] - dy * mod)];
-          points[points.length-1] = [rn(l[0] + dx * mod), rn(l[1] + dy * mod)];
+          points[points.length - 1] = [rn(l[0] + dx * mod), rn(l[1] + dy * mod)];
           textPath.setAttribute("d", round(lineGen(points)));
           //debug.append("path").attr("d", round(lineGen(points))).attr("fill", "none").attr("stroke", "red");
         }
-        
+
       });
     }()
 
     console.timeEnd("drawStateLabels");
   }
 
-  return {generate, expandStates, normalizeStates, drawBurgs, specifyBurgs, drawStateLabels};
+  return { generate, expandStates, normalizeStates, drawBurgs, specifyBurgs, drawStateLabels };
 
 })));

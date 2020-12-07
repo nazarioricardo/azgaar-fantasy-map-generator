@@ -74,7 +74,20 @@ scaleBar.on("mousemove", function () { tip("Click to open Units Editor"); }) // 
 // main data variables
 let grid = {}; // initial grapg based on jittered square grid and data
 let pack = {
-  cells: {}
+  cells: {
+    b: null,
+    c: null,
+    f: null,
+    g: null,
+    h: null,
+    i: null,
+    p: null,
+    q: d3.quadtree(),
+    r: null,
+    s: null,
+    t: null,
+    v: null,
+  }
 }; // packed graph and data
 let seed, mapHistory = [], elSelected, modules = {}, notes = [];
 let customization = 0; // 0 - no; 1 = heightmap draw; 2 - states draw; 3 - add state/burg; 4 - cultures draw

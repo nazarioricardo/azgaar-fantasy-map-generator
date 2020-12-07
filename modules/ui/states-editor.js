@@ -15,7 +15,7 @@ function editStates() {
 
   $("#statesEditor").dialog({
     title: "States Editor", width: fitContent(), close: closeStatesEditor,
-    position: {my: "right top", at: "right-10 top+10", of: "svg", collision: "fit"}
+    position: { my: "right top", at: "right-10 top+10", of: "svg", collision: "fit" }
   });
 
   // add listeners
@@ -51,7 +51,7 @@ function editStates() {
       states[s].area += cells.area[i];
       states[s].rural += cells.pop[i];
       if (cells.burg[i]) {
-        states[s].urban += pack.burgs[cells.burg[i]].population; 
+        states[s].urban += pack.burgs[cells.burg[i]].population;
         states[s].burgs++;
       }
     }
@@ -143,11 +143,11 @@ function editStates() {
     body.querySelectorAll("div > input.statePower").forEach(el => el.addEventListener("input", stateChangeExpansionism));
     body.querySelectorAll("div > span.icon-trash-empty").forEach(el => el.addEventListener("click", stateRemove));
 
-    if (body.dataset.type === "percentage") {body.dataset.type = "absolute"; togglePercentageMode();}
+    if (body.dataset.type === "percentage") { body.dataset.type = "absolute"; togglePercentageMode(); }
     applySorting(statesHeader);
     $("#statesEditor").dialog();
   }
-  
+
   function getCultureOptions(culture) {
     let options = "";
     pack.cultures.slice(1).forEach(c => options += `<option ${c.i === culture ? "selected" : ""} value="${c.i}">${c.name}</option>`);
@@ -165,7 +165,7 @@ function editStates() {
     if (!layerIsOn("toggleStates")) return;
     const state = +event.target.dataset.id;
     if (customization || !state) return;
-    const path = regions.select("#state"+state).attr("d");
+    const path = regions.select("#state" + state).attr("d");
     debug.append("path").attr("class", "highlight").attr("d", path)
       .attr("fill", "none").attr("stroke", "red").attr("stroke-width", 1).attr("opacity", 1)
       .attr("filter", "url(#blur1)").call(transition);
@@ -181,13 +181,13 @@ function editStates() {
     const i = d3.interpolateString("0," + l, l + "," + l);
     return t => i(t);
   }
-  
+
   function removePath(path) {
     path.transition().duration(1000).attr("opacity", 0).remove();
   }
 
   function stateHighlightOff() {
-    debug.selectAll(".highlight").each(function(el) {
+    debug.selectAll(".highlight").each(function (el) {
       d3.select(this).call(removePath);
     });
   }
@@ -195,16 +195,16 @@ function editStates() {
   function stateChangeColor() {
     const state = +this.parentNode.dataset.id;
     pack.states[state].color = this.value;
-    regions.select("#state"+state).attr("fill", this.value);
-    regions.select("#state-gap"+state).attr("stroke", this.value);
-    regions.select("#state-border"+state).attr("stroke", d3.color(this.value).darker().hex());
+    regions.select("#state" + state).attr("fill", this.value);
+    regions.select("#state-gap" + state).attr("stroke", this.value);
+    regions.select("#state-border" + state).attr("stroke", d3.color(this.value).darker().hex());
   }
 
   function stateChangeName() {
     const state = +this.parentNode.dataset.id;
     this.parentNode.dataset.name = this.value;
     pack.states[state].name = this.value;
-    document.querySelector("#stateLabel"+state+" > textPath").textContent = this.value;
+    document.querySelector("#stateLabel" + state + " > textPath").textContent = this.value;
   }
 
   function stateChangeCapitalName() {
@@ -212,8 +212,8 @@ function editStates() {
     this.parentNode.dataset.capital = this.value;
     const capital = pack.states[state].capital;
     if (!capital) return;
-    pack.burgs[capital].name = this.value; 
-    document.querySelector("#burgLabel"+capital).textContent = this.value;
+    pack.burgs[capital].name = this.value;
+    document.querySelector("#burgLabel" + capital).textContent = this.value;
   }
 
   function stateCapitalZoomIn() {
@@ -247,19 +247,19 @@ function editStates() {
   function stateRemove() {
     if (customization) return;
     const state = +this.parentNode.dataset.id;
-    regions.select("#state"+state).remove();
-    regions.select("#state-gap"+state).remove();
-    regions.select("#state-border"+state).remove();
-    document.querySelector("#stateLabel"+state+" > textPath").remove();
-    pack.burgs.forEach(b => {if(b.state === state) b.state = 0;});
-    pack.cells.state.forEach((s, i) => {if(s === state) pack.cells.state[i] = 0;});
+    regions.select("#state" + state).remove();
+    regions.select("#state-gap" + state).remove();
+    regions.select("#state-border" + state).remove();
+    document.querySelector("#stateLabel" + state + " > textPath").remove();
+    pack.burgs.forEach(b => { if (b.state === state) b.state = 0; });
+    pack.cells.state.forEach((s, i) => { if (s === state) pack.cells.state[i] = 0; });
     pack.states[state].removed = true;
-    
+
     const capital = pack.states[state].capital;
     pack.burgs[capital].capital = false;
     pack.burgs[capital].state = 0;
     moveBurgToGroup(capital, "towns");
-    
+
     if (!layerIsOn("toggleStates")) toggleStates(); else drawStatesWithBorders();
     refreshStatesEditor();
   }
@@ -272,7 +272,7 @@ function editStates() {
       const totalArea = +statesFooterArea.dataset.area;
       const totalPopulation = +statesFooterPopulation.dataset.population;
 
-      body.querySelectorAll(":scope > div").forEach(function(el) {
+      body.querySelectorAll(":scope > div").forEach(function (el) {
         el.querySelector(".stateCells").innerHTML = rn(+el.dataset.cells / totalCells * 100) + "%";
         el.querySelector(".stateBurgs").innerHTML = rn(+el.dataset.burgs / totalBurgs * 100) + "%";
         el.querySelector(".biomeArea").innerHTML = rn(+el.dataset.area / totalArea * 100) + "%";
@@ -285,14 +285,14 @@ function editStates() {
   }
 
   function regenerateNames() {
-    body.querySelectorAll(":scope > div").forEach(function(el) {
+    body.querySelectorAll(":scope > div").forEach(function (el) {
       const state = +el.dataset.id;
       if (!state) return;
       const culture = pack.states[state].culture;
       const name = Names.getState(Names.getCulture(culture, 4, 7, ""), culture);
       el.querySelector(".stateName").value = name;
       pack.states[state].name = el.dataset.name = name;
-      labels.select("#stateLabel"+state+" > textPath").text(name);
+      labels.select("#stateLabel" + state + " > textPath").text(name);
     });
     if (adjustLabels.checked) BurgsAndStates.drawStateLabels();
   }
@@ -300,8 +300,8 @@ function editStates() {
   function openRegenerationMenu() {
     statesBottom.querySelectorAll(":scope > button").forEach(el => el.style.display = "none");
     statesRegenerateButtons.style.display = "block";
-    statesEditor.querySelectorAll(".hidden").forEach(el => {el.classList.remove("hidden"); el.classList.add("visible");});
-    $("#statesEditor").dialog({position: {my: "right top", at: "right top", of: $("#statesEditor").parent(), collision: "fit"}});
+    statesEditor.querySelectorAll(".hidden").forEach(el => { el.classList.remove("hidden"); el.classList.add("visible"); });
+    $("#statesEditor").dialog({ position: { my: "right top", at: "right top", of: $("#statesEditor").parent(), collision: "fit" } });
   }
 
   function recalculateStates() {
@@ -322,7 +322,7 @@ function editStates() {
     pack.states.slice(1).forEach(s => {
       const expansionism = rn(Math.random() * 4 + 1, 1);
       s.expansionism = expansionism;
-      body.querySelector("div.states[data-id='"+s.i+"'] > input.statePower").value = expansionism;
+      body.querySelector("div.states[data-id='" + s.i + "'] > input.statePower").value = expansionism;
     });
     recalculateStates();
   }
@@ -330,7 +330,7 @@ function editStates() {
   function exitRegenerationMenu() {
     statesBottom.querySelectorAll(":scope > button").forEach(el => el.style.display = "inline-block");
     statesRegenerateButtons.style.display = "none";
-    statesEditor.querySelectorAll(".visible").forEach(el => {el.classList.remove("visible"); el.classList.add("hidden");});
+    statesEditor.querySelectorAll(".visible").forEach(el => { el.classList.remove("visible"); el.classList.add("hidden"); });
   }
 
   function enterStatesManualAssignent() {
@@ -358,25 +358,27 @@ function editStates() {
   }
 
   function selectStateOnMapClick() {
+    console.log('selectStateOnMapClick')
     const point = d3.mouse(this);
     const i = findCell(point[0], point[1]);
     if (pack.cells.h[i] < 20) return;
 
-    const assigned = regions.select("#temp").select("polygon[data-cell='"+i+"']");
+    const assigned = regions.select("#temp").select("polygon[data-cell='" + i + "']");
     const state = assigned.size() ? +assigned.attr("data-state") : pack.cells.state[i];
 
     body.querySelector("div.selected").classList.remove("selected");
-    body.querySelector("div[data-id='"+state+"']").classList.add("selected");
+    body.querySelector("div[data-id='" + state + "']").classList.add("selected");
   }
 
   function dragStateBrush() {
+    console.log('dragStateBrush')
     const p = d3.mouse(this);
     const r = +statesManuallyBrush.value;
     moveCircle(p[0], p[1], r);
 
     const found = r > 5 ? findAll(p[0], p[1], r) : [findCell(p[0], p[1], r)];
     const selection = found.filter(isLand);
-    if (selection) changeStateForSelection(selection);    
+    if (selection) changeStateForSelection(selection);
   }
 
   // change state within selection
@@ -387,8 +389,8 @@ function editStates() {
     const stateNew = +selected.dataset.id;
     const color = pack.states[stateNew].color || "#ffffff";
 
-    selection.forEach(function(i) {
-      const exists = temp.select("polygon[data-cell='"+i+"']");
+    selection.forEach(function (i) {
+      const exists = temp.select("polygon[data-cell='" + i + "']");
       const stateOld = exists.size() ? +exists.attr("data-state") : pack.cells.state[i];
       if (stateNew === stateOld) return;
       if (i === pack.states[stateOld].center) return;
@@ -409,7 +411,7 @@ function editStates() {
   function applyStatesManualAssignent() {
     const cells = pack.cells;
     const changed = regions.select("#temp").selectAll("polygon");
-    changed.each(function() {
+    changed.each(function () {
       const i = +this.dataset.cell;
       const c = +this.dataset.state;
       cells.state[i] = c;
@@ -423,7 +425,7 @@ function editStates() {
     }
     exitStatesManualAssignment();
   }
- 
+
   function exitStatesManualAssignment() {
     customization = 0;
     regions.select("#temp").remove();
@@ -437,9 +439,9 @@ function editStates() {
     const selected = body.querySelector("div.selected");
     if (selected) selected.classList.remove("selected");
   }
-  
+
   function enterAddStateMode() {
-    if (this.classList.contains("pressed")) {exitAddStateMode(); return;};
+    if (this.classList.contains("pressed")) { exitAddStateMode(); return; };
     customization = 3;
     this.classList.add("pressed");
     tip("Click on the map to create a new capital or promote an existing burg", true);
@@ -448,11 +450,12 @@ function editStates() {
   }
 
   function addState() {
+    console.log('addState')
     const point = d3.mouse(this);
     const center = findCell(point[0], point[1]);
-    if (pack.cells.h[center] < 20) {tip("You cannot place state into the water. Please click on a land cell", false, "error"); return;}
+    if (pack.cells.h[center] < 20) { tip("You cannot place state into the water. Please click on a land cell", false, "error"); return; }
     let burg = pack.cells.burg[center];
-    if (burg && pack.burgs[burg].capital) {tip("Existing capital cannot be selected as a new state capital! Select other cell", false, "error"); return;}
+    if (burg && pack.burgs[burg].capital) { tip("Existing capital cannot be selected as a new state capital! Select other cell", false, "error"); return; }
     if (!burg) burg = addBurg(point); // add new burg
 
     // turn burg into a capital
@@ -462,7 +465,7 @@ function editStates() {
 
     exitAddStateMode();
     const culture = pack.cells.culture[center];
-    const basename = center%5 === 0 ? pack.burgs[burg].name : Names.getCulture(culture);
+    const basename = center % 5 === 0 ? pack.burgs[burg].name : Names.getCulture(culture);
     const name = Names.getState(basename, culture);
     const color = d3.color(d3.scaleSequential(d3.interpolateRainbow)(Math.random())).hex();
 
@@ -472,7 +475,7 @@ function editStates() {
       if (pack.cells.burg[c]) return;
       pack.cells.state[c] = pack.states.length;
     });
-    pack.states.push({i:pack.states.length, name, color, expansionism:.5, capital:burg, type:"Generic", center, culture});
+    pack.states.push({ i: pack.states.length, name, color, expansionism: .5, capital: burg, type: "Generic", center, culture });
 
     if (!layerIsOn("toggleStates")) toggleStates(); else drawStatesWithBorders();
     if (adjustLabels.checked) BurgsAndStates.drawStateLabels();
@@ -486,12 +489,12 @@ function editStates() {
     body.querySelectorAll("div > *").forEach(e => e.disabled = false);
     if (statesAdd.classList.contains("pressed")) statesAdd.classList.remove("pressed");
   }
-  
+
   function downloadStatesData() {
     const unit = areaUnit.value === "square" ? distanceUnit.value + "2" : areaUnit.value;
-    let data = "Id,State,Color,Capital,Culture,Type,Expansionism,Cells,Burgs,Area "+unit+",Population\n"; // headers
+    let data = "Id,State,Color,Capital,Culture,Type,Expansionism,Cells,Burgs,Area " + unit + ",Population\n"; // headers
 
-    body.querySelectorAll(":scope > div").forEach(function(el) {
+    body.querySelectorAll(":scope > div").forEach(function (el) {
       data += el.dataset.id + ",";
       data += el.dataset.name + ",";
       data += el.dataset.color + ",";
@@ -505,14 +508,14 @@ function editStates() {
       data += el.dataset.population + "\n";
     });
 
-    const dataBlob = new Blob([data], {type: "text/plain"});
+    const dataBlob = new Blob([data], { type: "text/plain" });
     const url = window.URL.createObjectURL(dataBlob);
     const link = document.createElement("a");
     document.body.appendChild(link);
     link.download = "states_data" + Date.now() + ".csv";
     link.href = url;
     link.click();
-    window.setTimeout(function() {window.URL.revokeObjectURL(url);}, 2000);    
+    window.setTimeout(function () { window.URL.revokeObjectURL(url); }, 2000);
   }
 
   function closeStatesEditor() {
