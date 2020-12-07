@@ -13,7 +13,7 @@ function restoreLayers() {
   if (layerIsOn("togglePopulation")) drawPopulation();
   if (layerIsOn("toggleBiomes")) drawBiomes();
   if (layerIsOn("toggleRelief")) ReliefIcons();
-  if (layerIsOn("toggleStates") || layerIsOn("toggleBorders")) drawStatesWithBorders();
+  // if (layerIsOn("toggleStates") || layerIsOn("toggleBorders")) drawStatesWithBorders();
   if (layerIsOn("toggleCultures")) drawCultures();
 }
 
@@ -24,7 +24,7 @@ function changePreset(preset) {
   const layers = getLayers(preset); // layers to be turned on
   const ignore = ["toggleTexture", "toggleScaleBar"]; // never toggle this layers
 
-  document.getElementById("mapLayers").querySelectorAll("li").forEach(function(e) {
+  document.getElementById("mapLayers").querySelectorAll("li").forEach(function (e) {
     if (ignore.includes(e.id)) return; // ignore
     if (layers.includes(e.id) && !layerIsOn(e.id)) e.click(); // turn on
     else if (!layers.includes(e.id) && layerIsOn(e.id)) e.click(); // turn off
@@ -34,7 +34,7 @@ function changePreset(preset) {
 
 // retrun list of layers to be turned on
 function getLayers(preset) {
-  switch(preset) {
+  switch (preset) {
     case "political": return ["toggleStates", "toggleRivers", "toggleBorders", "toggleRoutes", "toggleLabels", "toggleIcons"];
     case "cultural": return ["toggleCultures", "toggleRivers", "toggleBorders", "toggleRoutes", "toggleLabels", "toggleIcons"];
     case "heightmap": return ["toggleHeight", "toggleRivers"];
@@ -48,7 +48,7 @@ function toggleHeight() {
     turnButtonOn("toggleHeight");
     drawHeightmap();
   } else {
-    if (customization === 1) {tip("You cannot turn off the layer when heightmap is in edit mode", false, "error"); return;}
+    if (customization === 1) { tip("You cannot turn off the layer when heightmap is in edit mode", false, "error"); return; }
     turnButtonOff("toggleHeight");
     terrs.selectAll("*").remove();
   }
@@ -73,7 +73,7 @@ function drawHeightmap() {
   }
 
   let currentLayer = 20;
-  const heights = cells.i.sort((a, b) => cells.h[a] - cells.h[b]); 
+  const heights = cells.i.sort((a, b) => cells.h[a] - cells.h[b]);
   for (const i of heights) {
     const h = cells.h[i];
     if (h > currentLayer) currentLayer += skip;
@@ -100,7 +100,7 @@ function drawHeightmap() {
   // connect vertices to chain
   function connectVertices(start, h) {
     const chain = []; // vertices chain to form a path
-    for (let i=0, current = start; i === 0 || current !== start && i < 20000; i++) {
+    for (let i = 0, current = start; i === 0 || current !== start && i < 20000; i++) {
       const prev = chain[chain.length - 1]; // previous vertex in chain
       chain.push(current); // add current vertex to sequence
       const c = vertices.c[current]; // cells adjacent to vertex
@@ -112,7 +112,7 @@ function drawHeightmap() {
       if (v[0] !== prev && c0 !== c1) current = v[0];
       else if (v[1] !== prev && c1 !== c2) current = v[1];
       else if (v[2] !== prev && c0 !== c2) current = v[2];
-      if (current === chain[chain.length - 1]) {console.error("Next vertex is not found"); break;}
+      if (current === chain[chain.length - 1]) { console.error("Next vertex is not found"); break; }
     }
     return chain;
   }
@@ -122,7 +122,7 @@ function drawHeightmap() {
     const n = simplification + 1; // filter each nth element
     return chain.filter((d, i) => i % n === 0);
   }
-  
+
   console.timeEnd("drawHeightmap");
 }
 
@@ -159,7 +159,7 @@ function drawTemp() {
   const used = new Uint8Array(n); // to detect already passed cells
   const min = d3.min(cells.temp), max = d3.max(cells.temp);
   const step = Math.max(Math.round(Math.abs(min - max) / 5), 1);
-  const isolines = d3.range(min+step, max, step); 
+  const isolines = d3.range(min + step, max, step);
   const chains = [], labels = []; // store label coordinates
 
   for (const i of cells.i) {
@@ -171,7 +171,7 @@ function drawTemp() {
     //debug.append("circle").attr("r", 3).attr("cx", vertices.p[start][0]).attr("cy", vertices.p[start][1]).attr("fill", "red").attr("stroke", "black").attr("stroke-width", .3);
 
     const chain = connectVertices(start, t); // vertices chain to form a path
-    const relaxed = chain.filter((v, i) => i%4 === 0 || vertices.c[v].some(c => c >= n));
+    const relaxed = chain.filter((v, i) => i % 4 === 0 || vertices.c[v].some(c => c >= n));
     if (relaxed.length < 6) continue;
     const points = relaxed.map(v => vertices.p[v]);
     chains.push([t, points]);
@@ -220,7 +220,7 @@ function drawTemp() {
   // connect vertices to chain
   function connectVertices(start, t) {
     const chain = []; // vertices chain to form a path
-    for (let i=0, current = start; i === 0 || current !== start && i < 20000; i++) {
+    for (let i = 0, current = start; i === 0 || current !== start && i < 20000; i++) {
       const prev = chain[chain.length - 1]; // previous vertex in chain
       chain.push(current); // add current vertex to sequence
       const c = vertices.c[current]; // cells adjacent to vertex
@@ -232,7 +232,7 @@ function drawTemp() {
       if (v[0] !== prev && c0 !== c1) current = v[0];
       else if (v[1] !== prev && c1 !== c2) current = v[1];
       else if (v[2] !== prev && c0 !== c2) current = v[2];
-      if (current === chain[chain.length - 1]) {console.error("Next vertex is not found"); break;}
+      if (current === chain[chain.length - 1]) { console.error("Next vertex is not found"); break; }
     }
     chain.push(start);
     return chain;
@@ -255,7 +255,7 @@ function drawBiomes() {
   const cells = pack.cells, vertices = pack.vertices, n = cells.i.length;
   const used = new Uint8Array(cells.i.length);
   const paths = new Array(biomesData.i.length).fill("");
-  
+
   for (const i of cells.i) {
     if (!cells.biome[i]) continue; // no need to mark water
     if (used[i]) continue; // already marked
@@ -269,16 +269,16 @@ function drawBiomes() {
     paths[b] += "M" + points.join("L") + "Z";
   }
 
-  paths.forEach(function(d, i) {
+  paths.forEach(function (d, i) {
     if (d.length < 10) return;
     const color = biomesData.color[i];
-    biomes.append("path").attr("d", d).attr("fill", color).attr("stroke", color).attr("id", "biome"+i);
+    biomes.append("path").attr("d", d).attr("fill", color).attr("stroke", color).attr("id", "biome" + i);
   });
 
   // connect vertices to chain
   function connectVertices(start, b) {
     const chain = []; // vertices chain to form a path
-    for (let i=0, current = start; i === 0 || current !== start && i < 20000; i++) {
+    for (let i = 0, current = start; i === 0 || current !== start && i < 20000; i++) {
       const prev = chain[chain.length - 1]; // previous vertex in chain
       chain.push(current); // add current vertex to sequence
       const c = vertices.c[current]; // cells adjacent to vertex
@@ -290,7 +290,7 @@ function drawBiomes() {
       if (v[0] !== prev && c0 !== c1) current = v[0];
       else if (v[1] !== prev && c1 !== c2) current = v[1];
       else if (v[2] !== prev && c0 !== c2) current = v[2];
-      if (current === chain[chain.length - 1]) {console.error("Next vertex is not found"); break;}
+      if (current === chain[chain.length - 1]) { console.error("Next vertex is not found"); break; }
     }
     return chain;
   }
@@ -319,7 +319,7 @@ function drawPrec() {
   const data = cells.i.filter(i => cells.h[i] >= 20 && cells.prec[i]);
   prec.selectAll("circle").data(data).enter().append("circle")
     .attr("cx", d => p[d][0]).attr("cy", d => p[d][1]).attr("r", 0)
-    .transition(show).attr("r", d => rn(Math.max(Math.sqrt(cells.prec[d] * .5), .8),2)); 
+    .transition(show).attr("r", d => rn(Math.max(Math.sqrt(cells.prec[d] * .5), .8), 2));
 }
 
 function togglePopulation() {
@@ -383,7 +383,7 @@ function toggleCultures() {
 
 function drawCultures() {
   console.time("drawCultures");
-  
+
   cults.selectAll("path").remove();
   const cells = pack.cells, vertices = pack.vertices, cultures = pack.cultures, n = cells.i.length;
   const used = new Uint8Array(cells.i.length);
@@ -404,12 +404,12 @@ function drawCultures() {
   }
 
   const data = paths.map((p, i) => [p, i, cultures[i].color]).filter(d => d[0].length > 10);
-  cults.selectAll("path").data(data).enter().append("path").attr("d", d => d[0]).attr("fill", d => d[2]).attr("id", d => "culture"+d[1]);
+  cults.selectAll("path").data(data).enter().append("path").attr("d", d => d[0]).attr("fill", d => d[2]).attr("id", d => "culture" + d[1]);
 
   // connect vertices to chain
   function connectVertices(start, t) {
     const chain = []; // vertices chain to form a path
-    for (let i=0, current = start; i === 0 || current !== start && i < 20000; i++) {
+    for (let i = 0, current = start; i === 0 || current !== start && i < 20000; i++) {
       const prev = chain[chain.length - 1]; // previous vertex in chain
       chain.push(current); // add current vertex to sequence
       const c = vertices.c[current]; // cells adjacent to vertex
@@ -421,7 +421,7 @@ function drawCultures() {
       if (v[0] !== prev && c0 !== c1) current = v[0];
       else if (v[1] !== prev && c1 !== c2) current = v[1];
       else if (v[2] !== prev && c0 !== c2) current = v[2];
-      if (current === chain[chain.length - 1]) {console.error("Next vertex is not found"); break;}
+      if (current === chain[chain.length - 1]) { console.error("Next vertex is not found"); break; }
     }
     return chain;
   }
@@ -462,8 +462,8 @@ function drawStatesWithBorders() {
     const chain = connectVertices(vertex, s, borderWith);
     if (chain.length < 3) continue;
     body[s] += "M" + chain.map(v => vertices.p[v[0]]).join("L");
-    gap[s] += "M" + vertices.p[chain[0][0]] + chain.reduce((r,v,i,d) => !i ? r : !v[2] ? r + "L" + vertices.p[v[0]] : d[i+1] && !d[i+1][2] ? r + "M" +  vertices.p[v[0]] : r, "");
-    border[s] += "M" + vertices.p[chain[0][0]] + chain.reduce((r,v,i,d) => !i ? r : v[2] && s > v[1] ? r + "L" + vertices.p[v[0]] : d[i+1] && d[i+1][2] && s > d[i+1][1] ? r + "M" +  vertices.p[v[0]] : r, "");
+    gap[s] += "M" + vertices.p[chain[0][0]] + chain.reduce((r, v, i, d) => !i ? r : !v[2] ? r + "L" + vertices.p[v[0]] : d[i + 1] && !d[i + 1][2] ? r + "M" + vertices.p[v[0]] : r, "");
+    border[s] += "M" + vertices.p[chain[0][0]] + chain.reduce((r, v, i, d) => !i ? r : v[2] && s > v[1] ? r + "L" + vertices.p[v[0]] : d[i + 1] && d[i + 1][2] && s > d[i + 1][1] ? r + "M" + vertices.p[v[0]] : r, "");
 
     // debug.append("circle").attr("r", 2).attr("cx", cells.p[i][0]).attr("cy", cells.p[i][1]).attr("fill", "blue");
     // const p = chain.map(v => vertices.p[v[0]])
@@ -473,24 +473,24 @@ function drawStatesWithBorders() {
   }
 
   const bodyData = body.map((p, i) => [p.length > 10 ? p : null, i, states[i].color]).filter(d => d[0]);
-  statesBody.selectAll("path").data(bodyData).enter().append("path").attr("d", d => d[0]).attr("fill", d => d[2]).attr("stroke", "none").attr("id", d => "state"+d[1]);
+  statesBody.selectAll("path").data(bodyData).enter().append("path").attr("d", d => d[0]).attr("fill", d => d[2]).attr("stroke", "none").attr("id", d => "state" + d[1]);
   const gapData = gap.map((p, i) => [p.length > 10 ? p : null, i, states[i].color]).filter(d => d[0]);
-  statesBody.selectAll(".path").data(gapData).enter().append("path").attr("d", d => d[0]).attr("fill", "none").attr("stroke", d => d[2]).attr("id", d => "state-gap"+d[1]);
+  statesBody.selectAll(".path").data(gapData).enter().append("path").attr("d", d => d[0]).attr("fill", "none").attr("stroke", d => d[2]).attr("id", d => "state-gap" + d[1]);
 
   defs.select("#statePaths").selectAll("clipPath").remove();
-  defs.select("#statePaths").selectAll("clipPath").data(bodyData).enter().append("clipPath").attr("id", d => "state-clip"+d[1]).append("use").attr("href", d => "#state"+d[1]);
-  statesHalo.selectAll(".path").data(bodyData).enter().append("path").attr("d", d => d[0]).attr("stroke", d => d3.color(d[2]).darker().hex()).attr("id", d => "state-border"+d[1]).attr("clip-path", d => "url(#state-clip"+d[1]+")");
+  defs.select("#statePaths").selectAll("clipPath").data(bodyData).enter().append("clipPath").attr("id", d => "state-clip" + d[1]).append("use").attr("href", d => "#state" + d[1]);
+  statesHalo.selectAll(".path").data(bodyData).enter().append("path").attr("d", d => d[0]).attr("stroke", d => d3.color(d[2]).darker().hex()).attr("id", d => "state-border" + d[1]).attr("clip-path", d => "url(#state-clip" + d[1] + ")");
 
   const borderData = border.map((p, i) => [p.length > 10 ? p : null, i]).filter(d => d[0]);
-  borders.selectAll("path").data(borderData).enter().append("path").attr("d", d => d[0]).attr("id", d => "border"+d[1]);
+  borders.selectAll("path").data(borderData).enter().append("path").attr("d", d => d[0]).attr("id", d => "border" + d[1]);
 
   // connect vertices to chain
   function connectVertices(start, t, state) {
     const chain = []; // vertices chain to form a path
     let land = vertices.c[start].some(c => cells.h[c] >= 20 && cells.state[c] !== t);
-    function check(i) {state = cells.state[i]; land = cells.h[i] >= 20;}
-    
-    for (let i=0, current = start; i === 0 || current !== start && i < 20000; i++) {
+    function check(i) { state = cells.state[i]; land = cells.h[i] >= 20; }
+
+    for (let i = 0, current = start; i === 0 || current !== start && i < 20000; i++) {
       const prev = chain[chain.length - 1] ? chain[chain.length - 1][0] : -1; // previous vertex in chain
       chain.push([current, state, land]); // add current vertex to sequence
       const c = vertices.c[current]; // cells adjacent to vertex
@@ -499,10 +499,10 @@ function drawStatesWithBorders() {
       const c1 = c[1] >= n || cells.state[c[1]] !== t;
       const c2 = c[2] >= n || cells.state[c[2]] !== t;
       const v = vertices.v[current]; // neighboring vertices
-      if (v[0] !== prev && c0 !== c1) {current = v[0]; check(c0 ? c[0] : c[1]);} else
-      if (v[1] !== prev && c1 !== c2) {current = v[1]; check(c1 ? c[1] : c[2]);} else
-      if (v[2] !== prev && c0 !== c2) {current = v[2]; check(c2 ? c[2] : c[0]);}
-      if (current === chain[chain.length - 1][0]) {console.error("Next vertex is not found"); break;}
+      if (v[0] !== prev && c0 !== c1) { current = v[0]; check(c0 ? c[0] : c[1]); } else
+        if (v[1] !== prev && c1 !== c2) { current = v[1]; check(c1 ? c[1] : c[2]); } else
+          if (v[2] !== prev && c0 !== c2) { current = v[2]; check(c2 ? c[2] : c[0]); }
+      if (current === chain[chain.length - 1][0]) { console.error("Next vertex is not found"); break; }
     }
     chain.push([start, state, land]); // add starting vertex to sequence to close the path
     return chain;
@@ -517,7 +517,7 @@ function toggleBorders() {
   } else {
     turnButtonOff("toggleBorders");
     $('#borders').fadeOut();
-  }  
+  }
 }
 
 function toggleGrid() {
@@ -554,8 +554,8 @@ function drawGrid() {
     const off = type === "pointyHex" ? rn(rt3 * size / 2, 2) : rn(size * 3 / 2, 2);
     const ySpace = type === "pointyHex" ? rn(size * 3 / 2, 2) : rn(rt3 * size / 2, 2);
     const xSpace = type === "pointyHex" ? rn(rt3 * size, 2) : rn(size * 3, 2);
-    for (let y = 0, l = 0; y < graphHeight+ySpace; y += ySpace, l++) {
-      for (let x = l % 2 ? 0 : off; x < graphWidth+xSpace; x += xSpace) {points.push([rn(x, 2), rn(y, 2)]);}
+    for (let y = 0, l = 0; y < graphHeight + ySpace; y += ySpace, l++) {
+      for (let x = l % 2 ? 0 : off; x < graphWidth + xSpace; x += xSpace) { points.push([rn(x, 2), rn(y, 2)]); }
     }
     return points;
   }
@@ -566,7 +566,7 @@ function drawGrid() {
     const s = type === "pointyHex" ? 0 : Math.PI / -6;
     const thirdPi = Math.PI / 3;
     let angles = [s, s + thirdPi, s + 2 * thirdPi, s + 3 * thirdPi, s + 4 * thirdPi, s + 5 * thirdPi];
-    return angles.map(function(a) {
+    return angles.map(function (a) {
       const x1 = Math.sin(a) * radius;
       const y1 = -Math.cos(a) * radius;
       const dx = rn(x1 - x0, 2);
@@ -574,7 +574,7 @@ function drawGrid() {
       x0 = x1, y0 = y1;
       return [rn(dx, 2), rn(dy, 2)];
     });
-  }  
+  }
 
   console.timeEnd("drawGrid");
 }
@@ -610,12 +610,12 @@ function drawCoordinates() {
   const lonW = mapCoordinates.lonW + (extent[0][0] / svgWidth) * mapCoordinates.lonT;
   const lonE = mapCoordinates.lonE - (1 - extent[1][0] / svgWidth) * mapCoordinates.lonT;
 
-  const grid =  coordinates.append("g").attr("id", "coordinateGrid");
-  const lalitude =  coordinates.append("g").attr("id", "lalitude");
-  const longitude =  coordinates.append("g").attr("id", "longitude");
+  const grid = coordinates.append("g").attr("id", "coordinateGrid");
+  const lalitude = coordinates.append("g").attr("id", "lalitude");
+  const longitude = coordinates.append("g").attr("id", "longitude");
 
   // rander lalitude lines
-  d3.range(nextStep(latS), nextStep(latN)+0.01, step).forEach(function(l) {
+  d3.range(nextStep(latS), nextStep(latN) + 0.01, step).forEach(function (l) {
     const c = eqY - l / 90 * eqD;
     const lat = l < 0 ? Math.abs(l) + "°S" : l + "°N";
     grid.append("line").attr("x1", 0).attr("x2", svgWidth).attr("y1", c).attr("y2", c).attr("l", l);
@@ -625,7 +625,7 @@ function drawCoordinates() {
   });
 
   // rander longitude lines
-  d3.range(nextStep(lonW), nextStep(lonE)+0.01, step).forEach(function(l) {
+  d3.range(nextStep(lonW), nextStep(lonE) + 0.01, step).forEach(function (l) {
     const c = merX + l / 90 * eqD;
     const lon = l < 0 ? Math.abs(l) + "°W" : l + "°E";
     grid.append("line").attr("x1", c).attr("x2", c).attr("y1", 0).attr("y2", svgHeight).attr("l", l);
@@ -634,7 +634,7 @@ function drawCoordinates() {
     longitude.append("text").attr("x", c).attr("y", p.y).text(lon);
   });
 
-  function nextStep(v) {return (v / step | 0) * step;}
+  function nextStep(v) { return (v / step | 0) * step; }
 }
 
 // conver svg point into viewBox point
@@ -653,7 +653,7 @@ function toggleCompass() {
     if (!compass.selectAll("*").size()) {
       const tr = `translate(80 80) scale(.25)`;
       d3.select("#rose").attr("transform", tr);
-      compass.append("use").attr("xlink:href","#rose");
+      compass.append("use").attr("xlink:href", "#rose");
     }
   } else {
     $('#compass').fadeOut();
@@ -736,7 +736,7 @@ function toggleIcons() {
   } else {
     turnButtonOff("toggleIcons");
     $('#icons').fadeOut();
-  }  
+  }
 }
 
 function toggleRulers() {
@@ -775,7 +775,7 @@ function turnButtonOn(el) {
 }
 
 // move layers on mapLayers dragging (jquery sortable)
-$("#mapLayers").sortable({items: "li:not(.solid)", cancel: ".solid", update: moveLayer});
+$("#mapLayers").sortable({ items: "li:not(.solid)", cancel: ".solid", update: moveLayer });
 function moveLayer(event, ui) {
   const el = getLayer(ui.item.attr("id"));
   if (el) {
